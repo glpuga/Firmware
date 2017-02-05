@@ -47,14 +47,26 @@
 /** \addtogroup Platform
  ** @{ */
 
+
+
 /*==================[inclusions]=============================================*/
 
+
+
 /*==================[cplusplus]==============================================*/
+
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+
+
 /*==================[macros]=================================================*/
+
+
+
 /** \brief check for ARCH/CPUTYPE and CPU */
 #ifndef ARCH
 #error ARCH is not defined, this define shall be included in the compile \
@@ -71,6 +83,8 @@ extern "C" {
    command
 #endif
 
+
+
 /****** ARCH macro definitions ******/
 /** \brief ARCH x86 */
 #define x86                   1
@@ -80,6 +94,8 @@ extern "C" {
 #define mips                  3
 /** \brief ARCH cortexM0 */
 #define cortexM0              4
+
+
 
 /****** CPUTYPE macro definitions ******/
 /*** CPUTYPES for ARCH=x86 ***/
@@ -98,6 +114,8 @@ extern "C" {
 /*** CPUTYPES for ARCH=mips ***/
 #define pic32                 1
 
+
+
 /****** CPU macro definitions ******/
 /*** CPU for ARCH=x86 CPUTYPE=ia32 ***/
 
@@ -111,6 +129,8 @@ extern "C" {
 
 /*** CPU for ARCH=mips CPUTYPE=pic32 ***/
 #define pic32mz               3
+
+
 
 /****** BOARDS macro definitions ******/
 /*** BOARD for ARCH=x86 CPUTYPE=ia32 ***/
@@ -131,8 +151,10 @@ extern "C" {
 /*** BOARD for ARCH=mips CPUTYPE=pic32 ***/
 #define ciaa_pic              6
 
+
+
 /****** CIAAPLATFORM_REGLENGTH ******/
-/** \brief definition of the lenght of the register */
+/** \brief definition of the length of the register */
 #if (ARCH == x86)
 #if (CPUTYPE == ia32)
 #define CIAAPLATFORM_REGLENGTH      32
@@ -140,6 +162,8 @@ extern "C" {
 #define CIAAPLATFORM_REGLENGTH      64
 #endif
 #endif
+
+
 
 /****** CIAAPLATFORM_ENDIANESS ******/
 #define CIAAPLATFORM_BIGENDIAN      0
@@ -171,16 +195,30 @@ extern "C" {
 #error the entered architecture is not supported... :(
 #endif
 
+
+
 /*==================[typedef]================================================*/
+
+
 
 /*==================[external data declaration]==============================*/
 
+
+
 /*==================[external functions declaration]=========================*/
 
+
+
 /*==================[cplusplus]==============================================*/
+
+
+
 #ifdef __cplusplus
 }
 #endif
+
+
+
 /** @} doxygen end group definition */
 /** @} doxygen end group definition */
 /*==================[end of file]============================================*/
