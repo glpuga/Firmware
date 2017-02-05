@@ -107,6 +107,7 @@ extern "C" {
 
 /*** CPUTYPES for ARCH=cortexM4 and ARCH=cortexM0 ***/
 #define lpc43xx               1
+#define lpc5410x              2
 
 /*** CPUTYPES for ARCH=cortexM4 ***/
 #define k60_120               2
@@ -130,6 +131,9 @@ extern "C" {
 /*** CPU for ARCH=mips CPUTYPE=pic32 ***/
 #define pic32mz               3
 
+/*** CPU for ARCH=cortexM4 or ARCH=cortexM0 and CPUTYPE=lpc5410x ***/
+#define lpc54102              4
+
 
 
 /****** BOARDS macro definitions ******/
@@ -151,6 +155,8 @@ extern "C" {
 /*** BOARD for ARCH=mips CPUTYPE=pic32 ***/
 #define ciaa_pic              6
 
+/*** BOARD for ARCH=cortexM4 CPUTYPE=lpc5410x ***/
+#define pico_ciaa             7
 
 
 /****** CIAAPLATFORM_REGLENGTH ******/
@@ -191,6 +197,9 @@ extern "C" {
 #elif ( ( ARCH == mips ) && \
         ( CPUTYPE == pic32 ) && \
         ( CPU == pic32mz ) )
+#elif ( ( ARCH == cortexM4 ) && \
+        ( CPUTYPE == lpc5410x ) && \
+        ( CPU == lpc54102 ) )
 #else
 #error the entered architecture is not supported... :(
 #endif
