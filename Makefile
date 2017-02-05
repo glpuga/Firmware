@@ -99,6 +99,13 @@ CPUTYPE        ?= lpc43xx
 CPU            ?= lpc4337
 COMPILER       ?= gcc
 endif
+# Default values for pico_ciaa
+ifeq ($(BOARD),pico_ciaa)
+ARCH           ?= cortexM4
+CPUTYPE        ?= lpc5410x
+CPU            ?= lpc54102
+COMPILER       ?= gcc
+endif
 # Default values for ciaa_fsl
 ifeq ($(BOARD),ciaa_fsl)
 ARCH           ?= cortexM4
