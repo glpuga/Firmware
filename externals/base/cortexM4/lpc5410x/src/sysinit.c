@@ -29,23 +29,33 @@
  * this code.
  */
 
+
+
  #if defined(NO_BOARD_LIB)
  #include "chip.h"
  #else
  #include "board.h"
  #endif
 
+
+
 /*****************************************************************************
  * Private types/enumerations/variables
  ****************************************************************************/
+
+
 
 /*****************************************************************************
  * Public types/enumerations/variables
  ****************************************************************************/
 
+
+
 #if defined(NO_BOARD_LIB)
 const uint32_t ExtClockIn = 0;
 #endif
+
+
 
 /*****************************************************************************
  * Private functions
@@ -54,6 +64,8 @@ const uint32_t ExtClockIn = 0;
 /*****************************************************************************
  * Public functions
  ****************************************************************************/
+
+
 
 /* Set up and initialize hardware prior to call to main */
 void SystemInit(void)
@@ -82,3 +94,6 @@ void SystemInit(void)
 #endif
 #endif
 }
+
+
+

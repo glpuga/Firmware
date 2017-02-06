@@ -498,7 +498,7 @@ void ResetISR(void)
 #endif
 
 #if !defined (__USE_LPCOPEN)
-   // LPCOpen init code deals with FP and VTOR initialisation
+   // LPCOpen init code deals with FP and VTOR initialization
 #if defined (__VFP_FP__) && !defined (__SOFTFP__)
    /*
     * Code to enable the Cortex-M4 FPU only included
@@ -537,16 +537,20 @@ void ResetISR(void)
 
 #if defined (__cplusplus)
    //
-   // Call C++ library initialisation
+   // Call C++ library initialization
    //
    __libc_init_array();
 #endif
 
 #if defined (__REDLIB__)
+
    // Call the Redlib library, which in turn calls main()
    __main();
+
 #else
+
    main();
+
 #endif
 
    //
@@ -557,10 +561,15 @@ void ResetISR(void)
    }
 }
 
+
+
 //*****************************************************************************
 // Default exception handlers. Override the ones here by defining your own
 // handler routines in your application code.
 //*****************************************************************************
+
+
+
 __attribute__ ((section(".after_vectors")))
 void NMI_Handler(void)
 {
