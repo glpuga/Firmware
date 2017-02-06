@@ -38,6 +38,15 @@
  #endif
 
 
+/*****************************************************************************
+ * Private Macros
+ ****************************************************************************/
+
+
+
+#define PICOCIAA_XTAL_FREQ          12000000
+
+
 
 /*****************************************************************************
  * Private types/enumerations/variables
@@ -52,7 +61,9 @@
 
 
 #if defined(NO_BOARD_LIB)
-const uint32_t ExtClockIn = 0;
+
+const uint32_t ExtClockIn = PICOCIAA_XTAL_FREQ
+
 #endif
 
 
