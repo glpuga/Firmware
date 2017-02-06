@@ -190,6 +190,8 @@ void Chip_SetupExtInClocking(uint32_t iFreq)
 /* Set up and initialize hardware prior to call to main */
 void Chip_SystemInit(void)
 {
-   /* Initial internal clocking @100MHz */
-   Chip_SetupIrcClocking(100000000);
+   /*
+    * Initial internal clocking @96MHz.
+    * */
+   Chip_SetupIrcClocking(96000000);
 }
