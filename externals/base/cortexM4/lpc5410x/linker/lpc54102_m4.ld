@@ -8,6 +8,9 @@
  * LPCXpresso v8.0.0 [Build 526] [2015-11-23]  on Feb 18, 2016 2:53:13 PM
  */
 
+INCLUDE "externals/base/cortexM4/lpc5410x/linker/lpc54102_m4_mem.ld"
+INCLUDE "externals/base/cortexM4/lpc5410x/linker/lpc54102_m4_lib.ld"
+
 ENTRY(ResetISR)
 
 SECTIONS

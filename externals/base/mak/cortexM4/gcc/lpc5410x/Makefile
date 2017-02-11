@@ -33,7 +33,7 @@
 #
 ###############################################################################
 
-LINKER_SCRIPT ?= ciaa_lpc54102_m4.ld
+LINKER_SCRIPT ?= lpc54102_m4.ld
 
 #LINKER_SCRIPT_RAM_EXEC ?= ciaa_lpc54102_RAM_Exec.ld
 
