@@ -37,7 +37,7 @@ LINKER_SCRIPT ?= ciaa_lpc54102_m4.ld
 
 #LINKER_SCRIPT_RAM_EXEC ?= ciaa_lpc54102_RAM_Exec.ld
 
-CFLAGS += -D__LPC5410X__
+CFLAGS += -D__LPC5410X__ -DNO_BOARD_LIB
 LFLAGS += -nostdlib -T "externals/base/cortexM4/lpc5410x/linker/$(LINKER_SCRIPT)"
 
 # this file needs to be compiled separated and not added to a library

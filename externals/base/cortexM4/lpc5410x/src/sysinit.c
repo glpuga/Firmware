@@ -62,7 +62,7 @@
 
 #if defined(NO_BOARD_LIB)
 
-const uint32_t ExtClockIn = PICOCIAA_XTAL_FREQ
+const uint32_t ExtClockIn = PICOCIAA_XTAL_FREQ;
 
 #endif
 
