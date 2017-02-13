@@ -59,6 +59,14 @@ SECTIONS
 	    /* End of Global Section Table */
 
         *(.after_vectors*)
+        
+        /* Code Read Protect data */
+        . = 0x000002FC ;
+        PROVIDE(__CRP_WORD_START__ = .) ;
+        KEEP(*(.crp))
+        PROVIDE(__CRP_WORD_END__ = .) ;
+        ASSERT(!(__CRP_WORD_START__ == __CRP_WORD_END__), "Linker CRP Enabled, but no CRP_WORD provided within application");
+        /* End of Code Read Protect */        
 
     } >MFlash512
 
