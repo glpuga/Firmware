@@ -52,8 +52,6 @@ extern void __libc_init_array(void);
 #endif
 #endif
 
-#define WEAK __attribute__ ((weak))
-
 #define ALIAS(f) __attribute__ ((weak, alias (#f)))
 
 
@@ -129,18 +127,6 @@ extern void _vStackTop(void);
 
 
 extern void (* const g_pfnVectors[])(void);
-
-
-
-//*****************************************************************************
-//
-// External declaration for LPC MCU vector table checksum from  Linker Script
-//
-//*****************************************************************************
-
-
-
-WEAK extern void __valid_user_code_checksum();
 
 
 
