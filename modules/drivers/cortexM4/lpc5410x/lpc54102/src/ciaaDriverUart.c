@@ -68,18 +68,18 @@
 #define CIAA_DRIVER_USART_LPC54102_RX_INTERRUPT_MASK        (LPC_PERIPFIFO_INT_RXTH | LPC_PERIPFIFO_INT_RXTIMEOUT)
 
 
-#define CIAA_DRIVER_USART_LPC54102_INTERNAL_RX_BUFFER_SIZE  (16)
+#define CIAA_DRIVER_USART_LPC54102_INTERNAL_BUFFER_SIZE  (16)
 
 
 typedef struct {
 
-   uint32_t circularQueue[CIAA_DRIVER_USART_LPC54102_INTERNAL_RX_BUFFER_SIZE];
+   uint32_t circularQueue[CIAA_DRIVER_USART_LPC54102_INTERNAL_BUFFER_SIZE];
 
    uint32_t head;
 
    uint32_t tail;
 
-} ciaaDriverUartLpc54102InternalRxBuffer;
+} ciaaDriverUartLpc54102InternalBuffer;
 
 
 typedef struct {
@@ -108,8 +108,8 @@ typedef struct {
    uint32_t lpcIoconRxMode;
    uint32_t lpcIoconRxFunc;
 
-   ciaaDriverUartLpc54102InternalRxBuffer *internalTxBufferPtr;
-   ciaaDriverUartLpc54102InternalRxBuffer *internalRxBufferPtr;
+   ciaaDriverUartLpc54102InternalBuffer *internalTxBufferPtr;
+   ciaaDriverUartLpc54102InternalBuffer *internalRxBufferPtr;
 
    ciaaDevices_deviceType *posixDeviceDataPtr;
 
@@ -204,9 +204,9 @@ inline uint32_t ciaaDriverUartLpc54102_internalFifoNextIndex(uint32_t index)
 
    incrementedIndex = index + 1;
 
-   if (incrementedIndex >= CIAA_DRIVER_USART_LPC54102_INTERNAL_RX_BUFFER_SIZE)
+   if (incrementedIndex >= CIAA_DRIVER_USART_LPC54102_INTERNAL_BUFFER_SIZE)
    {
-      incrementedIndex = incrementedIndex - CIAA_DRIVER_USART_LPC54102_INTERNAL_RX_BUFFER_SIZE;
+      incrementedIndex = incrementedIndex - CIAA_DRIVER_USART_LPC54102_INTERNAL_BUFFER_SIZE;
    }
 
    return incrementedIndex;
@@ -240,7 +240,7 @@ inline uint32_t ciaaDriverUartLpc54102_internalFifoIsFull(ciaaDriverUartLpc54102
 void ciaaDriverUartLpc54102_internalFifoPush(ciaaDriverUartLpc54102InternalRxBuffer *fifo, uint32_t item)
 {
    /*
-    * You should have checked whether the FIFO is full before calling this function.
+    * You must check whether the FIFO is full before calling this function.
     * */
 
    fifo->circularQueue[fifo->tail] = item;
@@ -252,6 +252,10 @@ void ciaaDriverUartLpc54102_internalFifoPush(ciaaDriverUartLpc54102InternalRxBuf
 int32_t ciaaDriverUartLpc54102_internalFifoPop(ciaaDriverUartLpc54102InternalRxBuffer *fifo)
 {
    uint32_t oldHead;
+
+   /*
+    * You must check whether the FIFO is empty before calling this function.
+    * */
 
    oldHead = fifo->head;
 
@@ -292,7 +296,7 @@ void ciaaDriverUartLpc54102_InitializeControlStructures()
 
       lpc54102PosixRegistrationDataTable[devIndex].upLayer = NULL;
       lpc54102PosixRegistrationDataTable[devIndex].layer   = (void *)lpc54102DeviceControlStructures[devIndex];
-      lpc54102PosixRegistrationDataTable[devIndex].loLayer = lpc54102DeviceControlStructures[devIndex].lpcDevice;
+      lpc54102PosixRegistrationDataTable[devIndex].loLayer = (void *)lpc54102DeviceControlStructures[devIndex].lpcDevice;
 
       lpc54102DeviceControlStructures[devIndex].posixDeviceDataPtr = &lpc54102PosixRegistrationDataTable[devIndex];
    }
@@ -326,7 +330,7 @@ void ciaaDriverUartLpc54102_hardwareInit()
 
    /*
     * Pause the FIFOs before configuration. Probably not needed after resetting
-    * the devices, but playing it on the safe side.
+    * the devices, but it's better to fail on the safe side...
     * */
 
    Chip_FIFO_PauseFifo(LPC_FIFO, FIFO_USART, FIFO_TX);
@@ -336,7 +340,7 @@ void ciaaDriverUartLpc54102_hardwareInit()
     * Prepare the configuration for the devices listed on the device description table.
     * */
 
-   for (devIndex = 0; lpc54102DeviceControlStructures[devIndex < 4; devIndex++)
+   for (devIndex = 0; devIndex < 4; devIndex++)
    {
       fifoSizes.fifoTXSize[devIndex] = 0;
       fifoSizes.fifoRXSize[devIndex] = 0;
@@ -349,7 +353,7 @@ void ciaaDriverUartLpc54102_hardwareInit()
    }
 
    /*
-    * Configure and update the new USART FIFO sizes and un-pause them.
+    * Configure and update the new USART FIFO sizes.
     * */
 
    Chip_FIFO_ConfigFifoSize(LPC_FIFO, FIFO_USART, fifoSizes);
@@ -388,7 +392,6 @@ void ciaaDriverUartLpc54102_hardwareInit()
    Chip_FIFO_UnpauseFifo(LPC_FIFO, FIFO_USART, FIFO_TX);
    Chip_FIFO_UnpauseFifo(LPC_FIFO, FIFO_USART, FIFO_RX);
 
-
    /*
     * USART specific configuration
     *
@@ -421,10 +424,9 @@ void ciaaDriverUartLpc54102_hardwareInit()
       /*
        * WARNING:
        *
-       * All USART share the same fractional divider, so all the USARTs
+       * All USARTs share the same fractional divider, so all the USARTs
        * will always run at the same baudrate, and the following line will
-       * leave all of them configured with the baudrate of the last USART that
-       * is configured.
+       * leave all of them configured with the baudrate of the last one.
        * */
       Chip_UART_SetBaud(
             lpc54102DeviceControlStructures[devIndex].lpcName,
@@ -478,8 +480,8 @@ static void ciaaDriverUartLpc54102_txConfirmation(ciaaDevices_deviceType const *
 void ciaaDriverUartLpc54102_unifiedIRQn(int32_t devIndex)
 {
    ciaaDriverUartLpc54102DeviceDescriptiontype *dev;
-   ciaaDriverUartLpc54102InternalRxBuffer *rxBufferPtr;
-   ciaaDriverUartLpc54102InternalRxBuffer *txBufferPtr;
+   ciaaDriverUartLpc54102InternalBuffer *rxBufferPtr;
+   ciaaDriverUartLpc54102InternalBuffer *txBufferPtr;
    uint32_t uartStatus;
    uint8_t dataByte;
 
@@ -510,7 +512,7 @@ void ciaaDriverUartLpc54102_unifiedIRQn(int32_t devIndex)
 
    /* *** */
 
-   if (ciaaDriverUartLpc54102_EnabledInts(LPC_FIFO, dev->usartIndex) & CIAA_DRIVER_USART_LPC54102_TX_INTERRUPT_MASK != 0)
+   if ((ciaaDriverUartLpc54102_EnabledInts(LPC_FIFO, dev->usartIndex) & CIAA_DRIVER_USART_LPC54102_TX_INTERRUPT_MASK) != 0)
    {
 
       usartTxBufferIsFull = 0;
@@ -556,7 +558,7 @@ void ciaaDriverUartLpc54102_unifiedIRQn(int32_t devIndex)
       /*
        * If we left the previous loop because there was no more space left
        * on the UART TX FIFO, then we must keep the interrupts on. Otherwise
-       * turn them off because there are no more bytes to send.
+       * turn them off because there are no more bytes waiting to be sent.
        * */
 
       if(usartTxBufferIsFull == 0)
@@ -588,7 +590,7 @@ extern int32_t ciaaDriverUart_close(ciaaDevices_deviceType const * const device)
 extern int32_t ciaaDriverUart_ioctl(ciaaDevices_deviceType const * const device, int32_t const request, void * param)
 {
    ciaaDriverUartLpc54102DeviceDescriptiontype *dev;
-   ciaaDriverUartLpc54102InternalRxBuffer *rxBufferPtr;
+   ciaaDriverUartLpc54102InternalBuffer *rxBufferPtr;
    ssize_t ret = -1;
 
    dev = (ciaaDriverUartLpc54102DeviceDescriptiontype *)device->layer;
@@ -664,7 +666,7 @@ extern int32_t ciaaDriverUart_ioctl(ciaaDevices_deviceType const * const device,
 extern ssize_t ciaaDriverUart_read(ciaaDevices_deviceType const * const device, uint8_t* buffer, size_t const size)
 {
    ciaaDriverUartLpc54102DeviceDescriptiontype *dev;
-   ciaaDriverUartLpc54102InternalRxBuffer *rxBufferPtr;
+   ciaaDriverUartLpc54102InternalBuffer *rxBufferPtr;
    ssize_t ret = -1;
 
    dev = (ciaaDriverUartLpc54102DeviceDescriptiontype *)device->layer;
@@ -690,7 +692,7 @@ extern ssize_t ciaaDriverUart_read(ciaaDevices_deviceType const * const device, 
 extern ssize_t ciaaDriverUart_write(ciaaDevices_deviceType const * const device, uint8_t const * const buffer, size_t const size)
 {
    ciaaDriverUartLpc54102DeviceDescriptiontype *dev;
-   ciaaDriverUartLpc54102InternalRxBuffer *txBufferPtr;
+   ciaaDriverUartLpc54102InternalBuffer *txBufferPtr;
    ssize_t ret = -1;
 
    dev = (ciaaDriverUartLpc54102DeviceDescriptiontype *)device->layer;
@@ -731,12 +733,6 @@ void ciaaDriverUart_init(void)
 ISR(UART0_IRQHandler)
 {
    ciaaDriverUartLpc54102_unifiedIRQn(0);
-}
-
-
-ISR(UART1_IRQHandler)
-{
-   ciaaDriverUartLpc54102_unifiedIRQn(1);
 }
 
 
