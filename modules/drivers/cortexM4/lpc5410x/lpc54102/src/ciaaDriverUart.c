@@ -58,6 +58,8 @@
 
 
 
+#define CIAA_DRIVER_USART_LPC54102_HW_USARTS_COUNT          (4)
+
 #define CIAA_DRIVER_USART_LPC54102_DEFAULT_BAUDRATE         (9600)
 
 #define CIAA_DRIVER_USART_LPC54102_DEFAULT_CONFIG           (UART_CFG_DATALEN_8 | UART_CFG_STOPLEN_1 | UART_CFG_PARITY_NONE)
@@ -129,9 +131,11 @@ typedef struct {
 
 
 
-ciaaDriverUartLpc54102InternalRxBuffer lpc54102InternalRxBuffers[4];
+ciaaDriverUartLpc54102InternalRxBuffer lpc54102InternalRxBuffers[CIAA_DRIVER_USART_LPC54102_HW_USARTS_COUNT];
 
-ciaaDevices_deviceType lpc54102PosixRegistrationDataTable[4];
+ciaaDevices_deviceType lpc54102PosixRegistrationDataTable[CIAA_DRIVER_USART_LPC54102_HW_USARTS_COUNT];
+
+int32_t lpc54102Uart2devIndexMap[CIAA_DRIVER_USART_LPC54102_HW_USARTS_COUNT];
 
 ciaaDriverUartLpc54102DeviceDescriptiontype lpc54102DeviceControlStructures[] =
       {
@@ -267,10 +271,22 @@ int32_t ciaaDriverUartLpc54102_internalFifoPop(ciaaDriverUartLpc54102InternalRxB
 
 void ciaaDriverUartLpc54102_InitializeControlStructures()
 {
+   int32_t usartIndex;
    int32_t devIndex;
 
-   for (devIndex = 0; (devIndex < 4) && (lpc54102DeviceControlStructures[devIndex].usartIndex >= 0); devIndex++)
+   for (usartIndex = 0; usartIndex < CIAA_DRIVER_USART_LPC54102_HW_USARTS_COUNT; usartIndex++)
    {
+      lpc54102Uart2devIndexMap[usartIndex] = -1;
+   }
+
+   for (devIndex = 0; (devIndex < CIAA_DRIVER_USART_LPC54102_HW_USARTS_COUNT) && (lpc54102DeviceControlStructures[devIndex].usartIndex >= 0); devIndex++)
+   {
+      /*
+       * Build he backwards map from usartIndex to devIndex
+       * */
+
+      lpc54102Uart2devIndexMap[lpc54102DeviceControlStructures[devIndex].usartIndex] = devIndex;
+
       /*
        * Internal RX buffer
        * */
@@ -340,13 +356,13 @@ void ciaaDriverUartLpc54102_hardwareInit()
     * Prepare the configuration for the devices listed on the device description table.
     * */
 
-   for (devIndex = 0; devIndex < 4; devIndex++)
+   for (devIndex = 0; devIndex < CIAA_DRIVER_USART_LPC54102_HW_USARTS_COUNT; devIndex++)
    {
       fifoSizes.fifoTXSize[devIndex] = 0;
       fifoSizes.fifoRXSize[devIndex] = 0;
    }
 
-   for (devIndex = 0; (devIndex < 4) && (lpc54102DeviceControlStructures[devIndex].usartIndex >= 0); devIndex++)
+   for (devIndex = 0; (devIndex < CIAA_DRIVER_USART_LPC54102_HW_USARTS_COUNT) && (lpc54102DeviceControlStructures[devIndex].usartIndex >= 0); devIndex++)
    {
       fifoSizes.fifoTXSize[lpc54102DeviceControlStructures[devIndex].usartIndex] = lpc54102DeviceControlStructures[devIndex].txFifoSize;
       fifoSizes.fifoRXSize[lpc54102DeviceControlStructures[devIndex].usartIndex] = lpc54102DeviceControlStructures[devIndex].rxFifoSize;
@@ -456,7 +472,7 @@ void ciaaDriverUartLpc54102_registerDevices()
 {
    int32_t devIndex;
 
-   for (devIndex = 0; (devIndex < 4) && (lpc54102DeviceControlStructures[devIndex].usartIndex >= 0); devIndex++)
+   for (devIndex = 0; (devIndex < CIAA_DRIVER_USART_LPC54102_HW_USARTS_COUNT) && (lpc54102DeviceControlStructures[devIndex].usartIndex >= 0); devIndex++)
    {
       ciaaSerialDevices_addDriver(&lpc54102DeviceControlStructures[devIndex].posixDeviceData);
    }
@@ -477,7 +493,7 @@ static void ciaaDriverUartLpc54102_txConfirmation(ciaaDevices_deviceType const *
 }
 
 
-void ciaaDriverUartLpc54102_unifiedIRQn(int32_t devIndex)
+void ciaaDriverUartLpc54102_unifiedIRQn(int32_t usartIndex)
 {
    ciaaDriverUartLpc54102DeviceDescriptiontype *dev;
    ciaaDriverUartLpc54102InternalBuffer *rxBufferPtr;
@@ -485,7 +501,7 @@ void ciaaDriverUartLpc54102_unifiedIRQn(int32_t devIndex)
    uint32_t uartStatus;
    uint8_t dataByte;
 
-   dev = &lpc54102DeviceControlStructures[devIndex];
+   dev = &lpc54102DeviceControlStructures[lpc54102Uart2devIndexMap[usartIndex]];
 
    txBufferPtr = dev->internalTxBufferPtr;
    rxBufferPtr = dev->internalRxBufferPtr;
@@ -733,6 +749,24 @@ void ciaaDriverUart_init(void)
 ISR(UART0_IRQHandler)
 {
    ciaaDriverUartLpc54102_unifiedIRQn(0);
+}
+
+
+ISR(UART1_IRQHandler)
+{
+   ciaaDriverUartLpc54102_unifiedIRQn(1);
+}
+
+
+ISR(UART2_IRQHandler)
+{
+   ciaaDriverUartLpc54102_unifiedIRQn(2);
+}
+
+
+ISR(UART3_IRQHandler)
+{
+   ciaaDriverUartLpc54102_unifiedIRQn(3);
 }
 
 
