@@ -282,7 +282,7 @@ void ciaaDriverUartLpc54102_InitializeControlStructures()
    for (devIndex = 0; (devIndex < CIAA_DRIVER_USART_LPC54102_HW_USARTS_COUNT) && (lpc54102DeviceControlStructures[devIndex].usartIndex >= 0); devIndex++)
    {
       /*
-       * Build he backwards map from usartIndex to devIndex
+       * Build the backwards map from usartIndex to devIndex
        * */
 
       lpc54102Uart2devIndexMap[lpc54102DeviceControlStructures[devIndex].usartIndex] = devIndex;
@@ -311,7 +311,7 @@ void ciaaDriverUartLpc54102_InitializeControlStructures()
       lpc54102PosixRegistrationDataTable[devIndex].lseek   = NULL;
 
       lpc54102PosixRegistrationDataTable[devIndex].upLayer = NULL;
-      lpc54102PosixRegistrationDataTable[devIndex].layer   = (void *)lpc54102DeviceControlStructures[devIndex];
+      lpc54102PosixRegistrationDataTable[devIndex].layer   = (void *)&lpc54102DeviceControlStructures[devIndex];
       lpc54102PosixRegistrationDataTable[devIndex].loLayer = (void *)lpc54102DeviceControlStructures[devIndex].lpcDevice;
 
       lpc54102DeviceControlStructures[devIndex].posixDeviceDataPtr = &lpc54102PosixRegistrationDataTable[devIndex];
@@ -329,6 +329,7 @@ void ciaaDriverUartLpc54102_hardwareInit()
    /*
     * The USART needs to use watchdog peripheral clock to generate RX timeouts.
     * */
+
    Chip_WWDT_Init(LPC_WWDT);
 
    /* Datasheet instructions for configuring the FIFO USART
@@ -431,10 +432,10 @@ void ciaaDriverUartLpc54102_hardwareInit()
 
    for (devIndex = 0; lpc54102DeviceControlStructures[devIndex].usartIndex >= 0; devIndex++)
    {
-      Chip_UART_Init(lpc54102DeviceControlStructures[devIndex].lpcName);
+      Chip_UART_Init(lpc54102DeviceControlStructures[devIndex].lpcDevice);
 
       Chip_UART_ConfigData(
-            lpc54102DeviceControlStructures[devIndex].lpcName,
+            lpc54102DeviceControlStructures[devIndex].lpcDevice,
             lpc54102DeviceControlStructures[devIndex].defaultConfig);
 
       /*
@@ -445,7 +446,7 @@ void ciaaDriverUartLpc54102_hardwareInit()
        * leave all of them configured with the baudrate of the last one.
        * */
       Chip_UART_SetBaud(
-            lpc54102DeviceControlStructures[devIndex].lpcName,
+            lpc54102DeviceControlStructures[devIndex].lpcDevice,
             lpc54102DeviceControlStructures[devIndex].defaultBaudrate);
 
       NVIC_EnableIRQ(
@@ -474,7 +475,7 @@ void ciaaDriverUartLpc54102_registerDevices()
 
    for (devIndex = 0; (devIndex < CIAA_DRIVER_USART_LPC54102_HW_USARTS_COUNT) && (lpc54102DeviceControlStructures[devIndex].usartIndex >= 0); devIndex++)
    {
-      ciaaSerialDevices_addDriver(&lpc54102DeviceControlStructures[devIndex].posixDeviceData);
+      ciaaSerialDevices_addDriver(&lpc54102PosixRegistrationDataTable[devIndex]);
    }
 }
 
@@ -538,7 +539,7 @@ void ciaaDriverUartLpc54102_unifiedIRQn(int32_t usartIndex)
       while (ciaaDriverUartLpc54102_internalFifoIsEmpty(txBufferPtr) == 0)
       {
 
-         if (Chip_FIFOUSART_GetTxCount(LPC_FIFO_T *pFIFO, int usartIndex) > 0)
+         if (Chip_FIFOUSART_GetTxCount(LPC_FIFO, dev->usartIndex) > 0)
          {
             /*
              * Extract a byte from the internal FIFO and push it into the UART TX
