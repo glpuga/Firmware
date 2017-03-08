@@ -55,6 +55,10 @@
 #include "ciaaDriverEth.h"
 #endif
 
+#if (BOARD == pico_ciaa)
+#include "ciaaDriverPwm.h"
+#endif
+
 #include "ciaaPOSIX_stdlib.h"
 
 /*==================[macros and definitions]=================================*/
@@ -92,6 +96,10 @@ void ciaak_start(void)
 #endif
    ciaaDriverDio_init();
    ciaaDriverAio_init();
+
+#if (BOARD == pico_ciaa)
+   ciaaDriverPwm_init();
+#endif
 }
 
 void *ciaak_malloc(size_t size)
