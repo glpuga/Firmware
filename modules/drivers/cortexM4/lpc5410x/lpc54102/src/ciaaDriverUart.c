@@ -656,6 +656,7 @@ extern int32_t ciaaDriverUart_ioctl(ciaaDevices_deviceType const * const device,
              * */
             Chip_FIFOUSART_EnableInts(LPC_FIFO, dev->usartIndex, CIAA_DRIVER_USART_LPC54102_TX_INTERRUPT_MASK)
          }
+         ret = 0;
          break;
 
       case ciaaPOSIX_IOCTL_SET_ENABLE_RX_INTERRUPT:
@@ -674,6 +675,7 @@ extern int32_t ciaaDriverUart_ioctl(ciaaDevices_deviceType const * const device,
              * */
             Chip_FIFOUSART_EnableInts(LPC_FIFO, dev->usartIndex, CIAA_DRIVER_USART_LPC54102_RX_INTERRUPT_MASK)
          }
+         ret = 0;
          break;
    }
 
