@@ -98,7 +98,11 @@ void ciaak_start(void)
    ciaaDriverAio_init();
 
 #if (BOARD == pico_ciaa)
+
    ciaaDriverPwm_init();
+
+   ciaaDriverPulseCapture_init();
+
 #endif
 }
 
