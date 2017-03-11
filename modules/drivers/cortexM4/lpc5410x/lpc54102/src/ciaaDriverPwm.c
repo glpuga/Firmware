@@ -208,7 +208,7 @@ void ciaaDriverPwmLpc54102_registerDevices()
 
    for (devIndex = 0; devIndex < CIAA_DRIVER_PWM_LPC54102_PWM_PORTS; devIndex++)
    {
-      ciaaSerialDevices_addDriver(&lpc54102PosixRegistrationDataTable[devIndex]);
+      ciaaDioDevices_addDriver(&lpc54102PosixRegistrationDataTable[devIndex]);
    }
 }
 
