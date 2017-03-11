@@ -131,6 +131,7 @@ typedef struct {
 
 
 
+ciaaDriverUartLpc54102InternalRxBuffer lpc54102InternalTxBuffers[CIAA_DRIVER_USART_LPC54102_HW_USARTS_COUNT];
 ciaaDriverUartLpc54102InternalRxBuffer lpc54102InternalRxBuffers[CIAA_DRIVER_USART_LPC54102_HW_USARTS_COUNT];
 
 ciaaDevices_deviceType lpc54102PosixRegistrationDataTable[CIAA_DRIVER_USART_LPC54102_HW_USARTS_COUNT];
