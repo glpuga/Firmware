@@ -60,7 +60,7 @@
 
 #define CIAA_DRIVER_PWM_LPC54102_PWM_PORTS         (sizeof(lpc54102PwmConfigurationStructures) / sizeof(lpc54102PwmConfigurationStructuresType))
 
-#define CIAA_DRIVER_USART_LPC54102_PWM_RATE        1000
+#define CIAA_DRIVER_PWM_LPC54102_PWM_RATE          1000
 
 
 typedef struct {
