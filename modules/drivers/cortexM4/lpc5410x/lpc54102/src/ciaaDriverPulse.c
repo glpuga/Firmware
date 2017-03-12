@@ -120,8 +120,7 @@ const lpc54102PulseCaptureDeviceDescriptionType lpc54102PulseCaptureDeviceDescri
                   0,                                              /* lpcIoconPort      */
                   0,                                              /* lpcIoconPin       */
                   0,                                              /* lpcIoconMode      */
-                  0,                                              /* lpcIoconFunc      */
-                  CT32B0_IRQn                                     /* lpcNvicInterrupt  */
+                  0                                              /* lpcIoconFunc      */
             }
       };
 
@@ -138,6 +137,39 @@ int32_t lpc54102PulseCaptureTimer2DevLookup[CIAA_DRIVER_PULSE_CAPTURE_LPC54102_C
 
 /*==================[internal functions definition]==========================*/
 
+
+
+inline IRQn_Type ciaaDriverPulseCapture_getLpcIrqIdFromUsartIndex(int32_t timerIndex)
+{
+   IRQn_Type lpcDeviceIrqId;
+
+   lpcDeviceIrqId = CT32B0_IRQn;
+
+   switch (timerIndex) {
+
+      case 0 :
+         lpcDeviceIrqId = CT32B0_IRQn;
+         break;
+
+      case 1 :
+         lpcDeviceIrqId = CT32B1_IRQn;
+         break;
+
+      case 2 :
+         lpcDeviceIrqId = CT32B2_IRQn;
+         break;
+
+      case 3 :
+         lpcDeviceIrqId = CT32B3_IRQn;
+         break;
+
+      default :
+         lpcDeviceIrqId = CT32B0_IRQn;
+         break;
+   }
+
+   return lpcDeviceIrqId;
+}
 
 
 inline void ciaaDriverPulseCapture_enableInterrupt(int32_t timerIndex)
@@ -312,7 +344,7 @@ void ciaaDriverPulseCaptureLpc54102_hardwareInit()
             CIAA_DRIVER_PULSE_CAPTURE_LPC54102_CAPTURE_CHANNEL);
 
       NVIC_EnableIRQ(
-            lpc54102PulseCaptureDeviceDescriptionTable[devIndex].lpcNvicInterrupt);
+            ciaaDriverPulseCapture_getLpcIrqIdFromUsartIndex(timerIndex));
 
       Chip_IOCON_PinMux(
             LPC_IOCON,
