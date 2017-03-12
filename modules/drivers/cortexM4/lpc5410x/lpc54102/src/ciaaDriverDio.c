@@ -94,9 +94,9 @@
 #define CIAA_DRIVER_DIO_LPC54102_DEFAULT_OUTPUT_PIN_MODE_PIO9_09TO17     (IOCON_DIGITAL_EN)
 
 
-#define CIAA_DRIVER_DIO_LPC54102_INPUT_PIN_COUNT    (sizeof(ciaaDriverDioLpc54102Inputs) / sizeof(ciaaDriverDio_dioType))
+#define CIAA_DRIVER_DIO_LPC54102_INPUT_PIN_COUNT    (sizeof(ciaaDriverDioLpc54102Inputs) / sizeof(ciaaDriverDioPinDescriptionType))
 
-#define CIAA_DRIVER_DIO_LPC54102_OUTPUT_PIN_COUNT   (sizeof(ciaaDriverDioLpc54102Outputs) / sizeof(ciaaDriverDio_dioType))
+#define CIAA_DRIVER_DIO_LPC54102_OUTPUT_PIN_COUNT   (sizeof(ciaaDriverDioLpc54102Outputs) / sizeof(ciaaDriverDioPinDescriptionType))
 
 
 typedef struct {
@@ -114,7 +114,7 @@ typedef struct {
 
    uint32_t pin;
 
-} ciaaDriverDio_dioType;
+} ciaaDriverDioPinDescriptionType;
 
 
 
@@ -130,14 +130,14 @@ typedef struct {
 
 
 
-const ciaaDriverDio_dioType ciaaDriverDioLpc54102Inputs[] = {
+const ciaaDriverDioPinDescriptionType ciaaDriverDioLpc54102Inputs[] = {
       {  0,   0 },
       {  0,   0 },
       {  0,   0 },
       {  0,   0 },
 };
 
-const ciaaDriverDio_dioType ciaaDriverDioLpc54102Outputs[] = {
+const ciaaDriverDioPinDescriptionType ciaaDriverDioLpc54102Outputs[] = {
       {  0,   0 },
       {  0,   0 },
       {  0,   0 },
@@ -173,7 +173,7 @@ static ciaaDevices_deviceType ciaaDriverDioLpc54102OutputDevice = {
 };
 
 
-static ciaaDevices_deviceType * const ciaaDriverDioLpc54102DevicesList[] =
+const static ciaaDevices_deviceType * const ciaaDriverDioLpc54102DevicesList[] =
       {
             &ciaaDriverDioLpc54102InputDevice,
             &ciaaDriverDioLpc54102OutputDevice,
@@ -413,7 +413,7 @@ static int32_t ciaaDriverDioLpc54102_readPins(int32_t pinCount, uint8_t * buffer
     * Amount of bytes necessary to store all input states.
     * */
 
-   count = (pinCount + 7) >> 3; /* +7 ensures rounding up */
+   count = (pinCount + 7) >> 3; /* +7 ensures rounding up on division. */
 
    /*
     * Truncate the pin count based on the buffer length.
