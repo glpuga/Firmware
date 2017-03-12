@@ -58,7 +58,7 @@
 
 
 
-#define CIAA_DRIVER_PULSE_CAPTURE_LPC54102_TIMER(n) (lpc54102PulseCaptureTimers[n])
+#define CIAA_DRIVER_PULSE_CAPTURE_LPC54102_TIMER(n) (ciaaDriverPulseCaptureLpc54102PulseCaptureTimers[n])
 
 #define CIAA_DRIVER_PULSE_CAPTURE_LPC54102_CAPTURE_CHANNEL       (0)
 
@@ -66,7 +66,7 @@
 
 #define CIAA_DRIVER_PULSE_CAPTURE_LPC54102_INTERNAL_BUFFER_SIZE  (8)
 
-#define CIAA_DRIVER_PULSE_CAPTURE_LPC54102_CAPTURE_PORTS         (sizeof(lpc54102PulseCaptureDeviceDescriptionTable) / sizeof(lpc54102PulseCaptureDeviceDescriptionType))
+#define CIAA_DRIVER_PULSE_CAPTURE_LPC54102_CAPTURE_PORTS         (sizeof(ciaaDriverPulseCaptureLpc54102PulseCaptureDeviceDescriptionTable) / sizeof(ciaaDriverPulseCaptureLpc54102PulseCaptureDeviceDescriptionType))
 
 
 typedef struct {
@@ -82,7 +82,7 @@ typedef struct {
 
    IRQn_Type lpcNvicInterrupt;
 
-} lpc54102PulseCaptureDeviceDescriptionType;
+} ciaaDriverPulseCaptureLpc54102PulseCaptureDeviceDescriptionType;
 
 
 typedef struct {
@@ -109,10 +109,10 @@ typedef struct {
 
 
 
-const LPC_TIMER_T lpc54102PulseCaptureTimers[] = { LPC_TIMER0, LPC_TIMER1, LPC_TIMER2, LPC_TIMER3 };
+const LPC_TIMER_T ciaaDriverPulseCaptureLpc54102PulseCaptureTimers[] = { LPC_TIMER0, LPC_TIMER1, LPC_TIMER2, LPC_TIMER3 };
 
 
-const lpc54102PulseCaptureDeviceDescriptionType lpc54102PulseCaptureDeviceDescriptionTable[] =
+const ciaaDriverPulseCaptureLpc54102PulseCaptureDeviceDescriptionType ciaaDriverPulseCaptureLpc54102PulseCaptureDeviceDescriptionTable[] =
       {
             {
                   0,                                              /* timerIndex        */
@@ -124,11 +124,11 @@ const lpc54102PulseCaptureDeviceDescriptionType lpc54102PulseCaptureDeviceDescri
             }
       };
 
-ciaaDevices_deviceType lpc54102PulseCapturePosixRegistrationTable[CIAA_DRIVER_PULSE_CAPTURE_LPC54102_CAPTURE_PORTS];
+ciaaDevices_deviceType ciaaDriverPulseCaptureLpc54102PosixRegistrationTable[CIAA_DRIVER_PULSE_CAPTURE_LPC54102_CAPTURE_PORTS];
 
-ciaaDriverPulseCaptureLpc54102InternalBufferType lpc54102PulseCaptureRxBufferTable[CIAA_DRIVER_PULSE_CAPTURE_LPC54102_CAPTURE_PORTS];
+ciaaDriverPulseCaptureLpc54102InternalBufferType ciaaDriverPulseCaptureLpc54102RxBufferTable[CIAA_DRIVER_PULSE_CAPTURE_LPC54102_CAPTURE_PORTS];
 
-int32_t lpc54102PulseCaptureTimer2DevLookup[CIAA_DRIVER_PULSE_CAPTURE_LPC54102_CAPTURE_PORTS];
+int32_t ciaaDriverPulseCaptureLpc54102Timer2DevLookup[CIAA_DRIVER_PULSE_CAPTURE_LPC54102_CAPTURE_PORTS];
 
 
 /*==================[external data definition]===============================*/
@@ -263,7 +263,7 @@ void ciaaDriverPulseCaptureLpc54102_InitializeControlStructures()
 
    for (devIndex = 0; devIndex < CIAA_DRIVER_PULSE_CAPTURE_LPC54102_CAPTURE_PORTS; devIndex++)
    {
-      lpc54102PulseCaptureTimer2DevLookup[usartIndex] = 0;
+      ciaaDriverPulseCaptureLpc54102Timer2DevLookup[usartIndex] = 0;
    }
 
    for (devIndex = 0; devIndex < CIAA_DRIVER_PULSE_CAPTURE_LPC54102_CAPTURE_PORTS; devIndex++)
@@ -272,30 +272,30 @@ void ciaaDriverPulseCaptureLpc54102_InitializeControlStructures()
        * Build the backwards map from usartIndex to devIndex
        * */
 
-      lpc54102PulseCaptureTimer2DevLookup[lpc54102PulseCaptureDeviceDescriptionTable[devIndex].timerIndex] = devIndex;
+      ciaaDriverPulseCaptureLpc54102Timer2DevLookup[ciaaDriverPulseCaptureLpc54102PulseCaptureDeviceDescriptionTable[devIndex].timerIndex] = devIndex;
 
       /*
        * POSIX device information information
        * */
 
-      lpc54102PulseCapturePosixRegistrationTable[devIndex].path    = lpc54102PulseCaptureDeviceDescriptionTable[devIndex].posixName;
+      ciaaDriverPulseCaptureLpc54102PosixRegistrationTable[devIndex].path    = ciaaDriverPulseCaptureLpc54102PulseCaptureDeviceDescriptionTable[devIndex].posixName;
 
-      lpc54102PulseCapturePosixRegistrationTable[devIndex].open    = ciaaDriverPulseCapture_open;
-      lpc54102PulseCapturePosixRegistrationTable[devIndex].close   = ciaaDriverPulseCapture_close;
-      lpc54102PulseCapturePosixRegistrationTable[devIndex].read    = ciaaDriverPulseCapture_read;
-      lpc54102PulseCapturePosixRegistrationTable[devIndex].write   = ciaaDriverPulseCapture_write;
-      lpc54102PulseCapturePosixRegistrationTable[devIndex].ioctl   = ciaaDriverPulseCapture_ioctl;
-      lpc54102PulseCapturePosixRegistrationTable[devIndex].lseek   = NULL;
+      ciaaDriverPulseCaptureLpc54102PosixRegistrationTable[devIndex].open    = ciaaDriverPulseCapture_open;
+      ciaaDriverPulseCaptureLpc54102PosixRegistrationTable[devIndex].close   = ciaaDriverPulseCapture_close;
+      ciaaDriverPulseCaptureLpc54102PosixRegistrationTable[devIndex].read    = ciaaDriverPulseCapture_read;
+      ciaaDriverPulseCaptureLpc54102PosixRegistrationTable[devIndex].write   = ciaaDriverPulseCapture_write;
+      ciaaDriverPulseCaptureLpc54102PosixRegistrationTable[devIndex].ioctl   = ciaaDriverPulseCapture_ioctl;
+      ciaaDriverPulseCaptureLpc54102PosixRegistrationTable[devIndex].lseek   = NULL;
 
-      lpc54102PulseCapturePosixRegistrationTable[devIndex].upLayer = NULL;
-      lpc54102PulseCapturePosixRegistrationTable[devIndex].layer   = (void *)&lpc54102PulseCaptureDeviceDescriptionTable[devIndex];
-      lpc54102PulseCapturePosixRegistrationTable[devIndex].loLayer = (void *)timerIndex;
+      ciaaDriverPulseCaptureLpc54102PosixRegistrationTable[devIndex].upLayer = NULL;
+      ciaaDriverPulseCaptureLpc54102PosixRegistrationTable[devIndex].layer   = (void *)&ciaaDriverPulseCaptureLpc54102PulseCaptureDeviceDescriptionTable[devIndex];
+      ciaaDriverPulseCaptureLpc54102PosixRegistrationTable[devIndex].loLayer = (void *)timerIndex;
 
       /*
        * Initialize the rx buffer
        * */
 
-      ciaaDriverPulseCaptureLpc54102_internalFifoClear(&lpc54102PulseCaptureRxBufferTable[devIndex]);
+      ciaaDriverPulseCaptureLpc54102_internalFifoClear(&ciaaDriverPulseCaptureLpc54102RxBufferTable[devIndex]);
    }
 }
 
@@ -308,7 +308,7 @@ void ciaaDriverPulseCaptureLpc54102_hardwareInit()
    for (devIndex = 0; devIndex < CIAA_DRIVER_PULSE_CAPTURE_LPC54102_CAPTURE_PORTS; devIndex++)
    {
 
-      timerIndex = lpc54102PulseCaptureDeviceDescriptionTable[devIndex].timerIndex;
+      timerIndex = ciaaDriverPulseCaptureLpc54102PulseCaptureDeviceDescriptionTable[devIndex].timerIndex;
 
       Chip_TIMER_Init(
             CIAA_DRIVER_PULSE_CAPTURE_LPC54102_TIMER(timerIndex));
@@ -331,10 +331,10 @@ void ciaaDriverPulseCaptureLpc54102_hardwareInit()
        * channel input pin.
        * */
 
-      pTMR->CTCR = (pTMR->CTCR & TIMER_CTCR_MASK)
-                            | ((uint32_t) (1 << 4)) /* Clear the timer and the preescaler on edge. */
-                            | ((uint32_t) (0 << 5)) /* Act on rising edge. */
-                            | ((uint32_t) (CIAA_DRIVER_PULSE_CAPTURE_LPC54102_CAPTURE_CHANNEL << 6));
+      pTMR->CTCR = (pTMR->CTCR & TIMER_CTCR_MASK) |
+            ((uint32_t) (1 << 4)) | /* Clear the timer and the preescaler on edge. */
+            ((uint32_t) (0 << 5)) | /* Act on rising edge. */
+            ((uint32_t) (CIAA_DRIVER_PULSE_CAPTURE_LPC54102_CAPTURE_CHANNEL << 6));
 
       Chip_TIMER_Reset(
             CIAA_DRIVER_PULSE_CAPTURE_LPC54102_TIMER(timerIndex));
@@ -348,10 +348,10 @@ void ciaaDriverPulseCaptureLpc54102_hardwareInit()
 
       Chip_IOCON_PinMux(
             LPC_IOCON,
-            lpc54102PulseCaptureDeviceDescriptionTable[devIndex].lpcIoconPort,
-            lpc54102PulseCaptureDeviceDescriptionTable[devIndex].lpcIoconPin,
-            lpc54102PulseCaptureDeviceDescriptionTable[devIndex].lpcIoconMode,
-            lpc54102PulseCaptureDeviceDescriptionTable[devIndex].lpcIoconFunc);
+            ciaaDriverPulseCaptureLpc54102PulseCaptureDeviceDescriptionTable[devIndex].lpcIoconPort,
+            ciaaDriverPulseCaptureLpc54102PulseCaptureDeviceDescriptionTable[devIndex].lpcIoconPin,
+            ciaaDriverPulseCaptureLpc54102PulseCaptureDeviceDescriptionTable[devIndex].lpcIoconMode,
+            ciaaDriverPulseCaptureLpc54102PulseCaptureDeviceDescriptionTable[devIndex].lpcIoconFunc);
 
       Chip_TIMER_Enable(
             CIAA_DRIVER_PULSE_CAPTURE_LPC54102_TIMER(timerIndex));
@@ -365,7 +365,7 @@ void ciaaDriverPulseCaptureLpc54102_registerDevices()
 
    for (devIndex = 0; devIndex < CIAA_DRIVER_PULSE_CAPTURE_LPC54102_CAPTURE_PORTS; devIndex++)
    {
-      ciaaSerialDevices_addDriver(&lpc54102PulseCapturePosixRegistrationTable[devIndex]);
+      ciaaSerialDevices_addDriver(&ciaaDriverPulseCaptureLpc54102PosixRegistrationTable[devIndex]);
    }
 }
 
@@ -384,9 +384,9 @@ void ciaaDriverPulseCaptureLpc54102_unifiedIRQn(int32_t timerIndex)
    uint32_t capturedValue;
    int32_t devIndex;
 
-   devIndex = lpc54102PulseCaptureTimer2DevLookup[timerIndex];
+   devIndex = ciaaDriverPulseCaptureLpc54102Timer2DevLookup[timerIndex];
 
-   rxBufferPtr = &lpc54102PulseCaptureRxBufferTable[devIndex];
+   rxBufferPtr = &ciaaDriverPulseCaptureLpc54102RxBufferTable[devIndex];
 
    capturedValue = Chip_TIMER_ReadCapture(
          CIAA_DRIVER_PULSE_CAPTURE_LPC54102_TIMER(timerIndex),
@@ -408,7 +408,7 @@ void ciaaDriverPulseCaptureLpc54102_unifiedIRQn(int32_t timerIndex)
    ciaaDriverPulseCapture_disableInterrupt(timerIndex);
 
    ciaaDriverUartLpc54102_rxIndication(
-         &lpc54102PulseCapturePosixRegistrationTable[devIndex]);
+         &ciaaDriverPulseCaptureLpc54102PosixRegistrationTable[devIndex]);
 }
 
 
@@ -472,9 +472,9 @@ extern ssize_t ciaaDriverPulseCapture_read(ciaaDevices_deviceType const * const 
 
    timerIndex = (ciaaDriverPulseCaptureLpc54102DeviceDescriptiontype *)device->loLayer;
 
-   devIndex   = lpc54102PulseCaptureTimer2DevLookup[timerIndex];
+   devIndex   = ciaaDriverPulseCaptureLpc54102Timer2DevLookup[timerIndex];
 
-   rxBufferPtr = &lpc54102PulseCaptureRxBufferTable[devIndex];
+   rxBufferPtr = &ciaaDriverPulseCaptureLpc54102RxBufferTable[devIndex];
 
    for (ret = 0; ret < size; ret++)
    {
