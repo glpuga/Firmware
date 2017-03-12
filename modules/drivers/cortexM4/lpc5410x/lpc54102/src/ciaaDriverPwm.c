@@ -118,13 +118,13 @@ const lpc54102PwmConfigurationStructuresType lpc54102PwmConfigurationStructures[
                   2,                   /* sctOutputPinIndex  */
                   0,                   /* lpcIoconPort       */
                   0,                   /* lpcIoconPin        */
-                  (IOCON_DIGITAL_EN),            /* lpcIoconMode       */
+                  (IOCON_DIGITAL_EN),  /* lpcIoconMode       */
                   0,                   /* lpcIoconFunc       */
             },
             {
                   4,                   /* pwmIndex           */
                   "pwm/3",             /* posixName          */
-                  3,                      /* sctOutputPinIndex  */
+                  3,                   /* sctOutputPinIndex  */
                   0,                   /* lpcIoconPort       */
                   0,                   /* lpcIoconPin        */
                   (IOCON_DIGITAL_EN)   /* lpcIoconMode       */
