@@ -90,8 +90,6 @@ typedef struct {
 
    int32_t usartIndex;
 
-   LPC_USART_T lpcDevice;
-
    char const * posixName;
 
    int32_t txFifoSize;
@@ -132,7 +130,6 @@ const ciaaDriverUartLpc54102DeviceDescriptionType ciaaDriverUartLpc54102DeviceDe
       {
             {
                   0,                                              /* usartIndex       */
-                  LPC_USART0,                                     /* lpcDevice        */
                   "uart/0",                                       /* posixName        */
                   8,                                              /* txFifoSize       */
                   8,                                              /* rxFifoSize       */
@@ -151,12 +148,12 @@ const ciaaDriverUartLpc54102DeviceDescriptionType ciaaDriverUartLpc54102DeviceDe
       };
 
 
-ciaaDriverUartLpc54102InternalBuffer lpc54102InternalTxBuffers[CIAA_DRIVER_USART_LPC54102_DEVICE_TABLE_SIZE];
-ciaaDriverUartLpc54102InternalBuffer lpc54102InternalRxBuffers[CIAA_DRIVER_USART_LPC54102_DEVICE_TABLE_SIZE];
+ciaaDriverUartLpc54102InternalBuffer ciaaDriverUartLpc54102InternalTxBuffers[CIAA_DRIVER_USART_LPC54102_DEVICE_TABLE_SIZE];
+ciaaDriverUartLpc54102InternalBuffer ciaaDriverUartLpc54102InternalRxBuffers[CIAA_DRIVER_USART_LPC54102_DEVICE_TABLE_SIZE];
 
-ciaaDevices_deviceType lpc54102PosixRegistrationDataTable[CIAA_DRIVER_USART_LPC54102_DEVICE_TABLE_SIZE];
+ciaaDevices_deviceType ciaaDriverUartLpc54102PosixRegistrationDataTable[CIAA_DRIVER_USART_LPC54102_DEVICE_TABLE_SIZE];
 
-int32_t lpc54102Uart2devIndexMap[CIAA_DRIVER_USART_LPC54102_DEVICE_TABLE_SIZE];
+int32_t ciaaDriverUartLpc54102Uart2devIndexMap[CIAA_DRIVER_USART_LPC54102_DEVICE_TABLE_SIZE];
 
 
 
@@ -165,6 +162,39 @@ int32_t lpc54102Uart2devIndexMap[CIAA_DRIVER_USART_LPC54102_DEVICE_TABLE_SIZE];
 
 
 /*==================[internal functions definition]==========================*/
+
+
+inline LPC_USART_T ciaaDriverUartLpc54102_getLpcDeviceFromUsartIndex(int32_t usartIndex)
+{
+   LPC_USART_T lpcDevice;
+
+   lpcDeviceId = LPC_USART0;
+
+   switch (usartIndex) {
+
+      case 0 :
+         lpcDeviceId = LPC_USART0;
+         break;
+
+      case 1 :
+         lpcDeviceId = LPC_USART1;
+         break;
+
+      case 2 :
+         lpcDeviceId = LPC_USART2;
+         break;
+
+      case 3 :
+         lpcDeviceId = LPC_USART3;
+         break;
+
+      default :
+         lpcDeviceId = LPC_USART0;
+         break;
+   }
+
+   return lpcDeviceId;
+}
 
 
 
@@ -247,45 +277,50 @@ int32_t ciaaDriverUartLpc54102_internalFifoPop(ciaaDriverUartLpc54102InternalBuf
 
 void ciaaDriverUartLpc54102_InitializeControlStructures()
 {
+   LPC_UART_T lpcDeviceId;
    int32_t usartIndex;
    int32_t devIndex;
 
    for (usartIndex = 0; usartIndex < CIAA_DRIVER_USART_LPC54102_HW_USARTS_COUNT; usartIndex++)
    {
-      lpc54102Uart2devIndexMap[usartIndex] = 0;
+      ciaaDriverUartLpc54102Uart2devIndexMap[usartIndex] = 0;
    }
 
    for (devIndex = 0; devIndex < CIAA_DRIVER_USART_LPC54102_DEVICE_TABLE_SIZE; devIndex++)
    {
+      usartIndex  = ciaaDriverUartLpc54102DeviceDescription[devIndex].usartIndex;
+
+      lpcDeviceId = ciaaDriverUartLpc54102_getLpcDeviceFromUsartIndex(usartIndex);
+
       /*
        * Build the backwards map from usartIndex to devIndex
        * */
 
-      lpc54102Uart2devIndexMap[ciaaDriverUartLpc54102DeviceDescription[devIndex].usartIndex] = devIndex;
+      ciaaDriverUartLpc54102Uart2devIndexMap[usartIndex] = devIndex;
 
       /*
        * Internal RX buffer
        * */
 
-      ciaaDriverUartLpc54102_internalFifoClear(lpc54102InternalTxBuffers[devIndex]);
-      ciaaDriverUartLpc54102_internalFifoClear(lpc54102InternalRxBuffers[devIndex]);
+      ciaaDriverUartLpc54102_internalFifoClear(ciaaDriverUartLpc54102InternalTxBuffers[devIndex]);
+      ciaaDriverUartLpc54102_internalFifoClear(ciaaDriverUartLpc54102InternalRxBuffers[devIndex]);
 
       /*
        * POSIX device information information
        * */
 
-      lpc54102PosixRegistrationDataTable[devIndex].path    = ciaaDriverUartLpc54102DeviceDescription[devIndex].posixName;
+      ciaaDriverUartLpc54102PosixRegistrationDataTable[devIndex].path    = ciaaDriverUartLpc54102DeviceDescription[devIndex].posixName;
 
-      lpc54102PosixRegistrationDataTable[devIndex].open    = ciaaDriverUart_open;
-      lpc54102PosixRegistrationDataTable[devIndex].close   = ciaaDriverUart_close;
-      lpc54102PosixRegistrationDataTable[devIndex].read    = ciaaDriverUart_read;
-      lpc54102PosixRegistrationDataTable[devIndex].write   = ciaaDriverUart_write;
-      lpc54102PosixRegistrationDataTable[devIndex].ioctl   = ciaaDriverUart_ioctl;
-      lpc54102PosixRegistrationDataTable[devIndex].lseek   = NULL;
+      ciaaDriverUartLpc54102PosixRegistrationDataTable[devIndex].open    = ciaaDriverUart_open;
+      ciaaDriverUartLpc54102PosixRegistrationDataTable[devIndex].close   = ciaaDriverUart_close;
+      ciaaDriverUartLpc54102PosixRegistrationDataTable[devIndex].read    = ciaaDriverUart_read;
+      ciaaDriverUartLpc54102PosixRegistrationDataTable[devIndex].write   = ciaaDriverUart_write;
+      ciaaDriverUartLpc54102PosixRegistrationDataTable[devIndex].ioctl   = ciaaDriverUart_ioctl;
+      ciaaDriverUartLpc54102PosixRegistrationDataTable[devIndex].lseek   = NULL;
 
-      lpc54102PosixRegistrationDataTable[devIndex].upLayer = NULL;
-      lpc54102PosixRegistrationDataTable[devIndex].layer   = (void *)&ciaaDriverUartLpc54102DeviceDescription[devIndex];
-      lpc54102PosixRegistrationDataTable[devIndex].loLayer = (void *)ciaaDriverUartLpc54102DeviceDescription[devIndex].lpcDevice;
+      ciaaDriverUartLpc54102PosixRegistrationDataTable[devIndex].upLayer = NULL;
+      ciaaDriverUartLpc54102PosixRegistrationDataTable[devIndex].layer   = (void *)&ciaaDriverUartLpc54102DeviceDescription[devIndex];
+      ciaaDriverUartLpc54102PosixRegistrationDataTable[devIndex].loLayer = (void *)lpcDeviceId;
    }
 }
 
@@ -294,6 +329,7 @@ void ciaaDriverUartLpc54102_hardwareInit()
 {
    LPC_FIFO_CFGSIZE_T fifoSizes;
    LPC_FIFO_CFG_T fifoConfig;
+   LPC_UART_T lpcDeviceId;
 
    int32_t devIndex;
 
@@ -403,10 +439,12 @@ void ciaaDriverUartLpc54102_hardwareInit()
 
    for (devIndex = 0; devIndex < CIAA_DRIVER_USART_LPC54102_DEVICE_TABLE_SIZE; devIndex++)
    {
-      Chip_UART_Init(ciaaDriverUartLpc54102DeviceDescription[devIndex].lpcDevice);
+      lpcDeviceId = ciaaDriverUartLpc54102_getLpcDeviceFromUsartIndex(ciaaDriverUartLpc54102DeviceDescription[devIndex].usartIndex);
+
+      Chip_UART_Init(lpcDeviceId);
 
       Chip_UART_ConfigData(
-            ciaaDriverUartLpc54102DeviceDescription[devIndex].lpcDevice,
+            lpcDeviceId,
             ciaaDriverUartLpc54102DeviceDescription[devIndex].defaultConfig);
 
       /*
@@ -417,7 +455,7 @@ void ciaaDriverUartLpc54102_hardwareInit()
        * leave all of them configured with the baudrate of the last one.
        * */
       Chip_UART_SetBaud(
-            ciaaDriverUartLpc54102DeviceDescription[devIndex].lpcDevice,
+            lpcDeviceId,
             ciaaDriverUartLpc54102DeviceDescription[devIndex].defaultBaudrate);
 
       NVIC_EnableIRQ(
@@ -446,7 +484,7 @@ void ciaaDriverUartLpc54102_registerDevices()
 
    for (devIndex = 0; devIndex < CIAA_DRIVER_USART_LPC54102_DEVICE_TABLE_SIZE; devIndex++)
    {
-      ciaaSerialDevices_addDriver(&lpc54102PosixRegistrationDataTable[devIndex]);
+      ciaaSerialDevices_addDriver(&ciaaDriverUartLpc54102PosixRegistrationDataTable[devIndex]);
    }
 }
 
@@ -473,10 +511,10 @@ void ciaaDriverUartLpc54102_unifiedIRQn(int32_t usartIndex)
    int32_t devIndex;
    uint8_t dataByte;
 
-   devIndex = lpc54102Uart2devIndexMap[usartIndex];
+   devIndex = ciaaDriverUartLpc54102Uart2devIndexMap[usartIndex];
 
-   txBufferPtr = &lpc54102InternalTxBuffers[devIndex];
-   rxBufferPtr = &lpc54102InternalRxBuffers[devIndex];
+   txBufferPtr = &ciaaDriverUartLpc54102InternalTxBuffers[devIndex];
+   rxBufferPtr = &ciaaDriverUartLpc54102InternalRxBuffers[devIndex];
 
    /* *** */
 
@@ -495,7 +533,7 @@ void ciaaDriverUartLpc54102_unifiedIRQn(int32_t usartIndex)
       } while ((ciaaDriverUartLpc54102_internalFifoIsFull(rxBufferPtr, dataByte) == 0) &&
             (uartStatus & LPC_PERIPFIFO_STAT_RXEMPTY == 0));
 
-      ciaaDriverUartLpc54102_rxIndication(&lpc54102PosixRegistrationDataTable[devIndex].posixDeviceData);
+      ciaaDriverUartLpc54102_rxIndication(&ciaaDriverUartLpc54102PosixRegistrationDataTable[devIndex].posixDeviceData);
    }
 
    /* *** */
@@ -505,7 +543,7 @@ void ciaaDriverUartLpc54102_unifiedIRQn(int32_t usartIndex)
 
       usartTxBufferIsFull = 0;
 
-      ciaaDriverUartLpc54102_txConfirmation(&lpc54102PosixRegistrationDataTable[devIndex].posixDeviceData);
+      ciaaDriverUartLpc54102_txConfirmation(&ciaaDriverUartLpc54102PosixRegistrationDataTable[devIndex].posixDeviceData);
 
       while (ciaaDriverUartLpc54102_internalFifoIsEmpty(txBufferPtr) == 0)
       {
@@ -539,7 +577,7 @@ void ciaaDriverUartLpc54102_unifiedIRQn(int32_t usartIndex)
 
          if (ciaaDriverUartLpc54102_internalFifoIsEmpty(txBufferPtr) != 0)
          {
-            ciaaDriverUartLpc54102_txConfirmation(&lpc54102PosixRegistrationDataTable[devIndex].posixDeviceData);
+            ciaaDriverUartLpc54102_txConfirmation(&ciaaDriverUartLpc54102PosixRegistrationDataTable[devIndex].posixDeviceData);
          }
       }
 
@@ -597,7 +635,9 @@ extern int32_t ciaaDriverUart_ioctl(ciaaDevices_deviceType const * const device,
           * WARNING: this will set the baudrate of ALL the USARTs at the same time,
           * since they all share the same fractional divider.
           * */
-         Chip_UART_SetBaud(dev->lpcDevice,  (int32_t)param);
+         Chip_UART_SetBaud(
+               ciaaDriverUartLpc54102_getLpcDeviceFromUsartIndex(dev->usartIndex),
+               (int32_t)param);
          ret = 0;
          break;
 
@@ -661,9 +701,9 @@ extern ssize_t ciaaDriverUart_read(ciaaDevices_deviceType const * const device, 
 
    dev = (ciaaDriverUartLpc54102DeviceDescriptionType *)device->layer;
 
-   devIndex = lpc54102Uart2devIndexMap[dev->usartIndex];
+   devIndex = ciaaDriverUartLpc54102Uart2devIndexMap[dev->usartIndex];
 
-   rxBufferPtr = lpc54102InternalRxBuffers[devIndex];
+   rxBufferPtr = ciaaDriverUartLpc54102InternalRxBuffers[devIndex];
 
    for (ret = 0; ret < size; ret++)
    {
@@ -690,9 +730,9 @@ extern ssize_t ciaaDriverUart_write(ciaaDevices_deviceType const * const device,
 
    dev = (ciaaDriverUartLpc54102DeviceDescriptionType *)device->layer;
 
-   devIndex = lpc54102Uart2devIndexMap[dev->usartIndex];
+   devIndex = ciaaDriverUartLpc54102Uart2devIndexMap[dev->usartIndex];
 
-   txBufferPtr = lpc54102InternalTxBuffers[devIndex];
+   txBufferPtr = ciaaDriverUartLpc54102InternalTxBuffers[devIndex];
 
    for (ret = 0; ret < size; ret++)
    {
