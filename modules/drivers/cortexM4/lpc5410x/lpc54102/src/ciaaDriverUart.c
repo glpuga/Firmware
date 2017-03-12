@@ -98,8 +98,6 @@ typedef struct {
    int32_t defaultBaudrate;
    uint32_t defaultConfig;
 
-   IRQn_Type lpcNvicInterrupt;
-
    uint32_t lpcIoconTxPort;
    uint32_t lpcIoconTxPin;
    uint32_t lpcIoconTxMode;
@@ -134,8 +132,7 @@ const ciaaDriverUartLpc54102DeviceDescriptionType ciaaDriverUartLpc54102DeviceDe
                   8,                                              /* txFifoSize       */
                   8,                                              /* rxFifoSize       */
                   CIAA_DRIVER_USART_LPC54102_DEFAULT_BAUDRATE,    /* defaultBaudrate  */
-                  CIAA_DRIVER_USART_LPC54102_DEFAULT_CONFIG,      /* defualtConfig    */
-                  UART0_IRQn,                                     /* lpcNvicInterrupt */
+                  CIAA_DRIVER_USART_LPC54102_DEFAULT_CONFIG,      /* defaultConfig    */
                   0,                                              /* lpcIoconTxPort     */
                   0,                                              /* lpcIoconTxPin      */
                   0,                                              /* lpcIoconTxMode     */
@@ -164,7 +161,40 @@ int32_t ciaaDriverUartLpc54102Uart2devIndexMap[CIAA_DRIVER_USART_LPC54102_DEVICE
 /*==================[internal functions definition]==========================*/
 
 
-inline LPC_USART_T ciaaDriverUartLpc54102_getLpcDeviceFromUsartIndex(int32_t usartIndex)
+inline IRQn_Type ciaaDriverUartLpc54102_getLpcIrqIdFromUsartIndex(int32_t usartIndex)
+{
+   IRQn_Type lpcDeviceIrqId;
+
+   lpcDeviceIrqId = UART0_IRQn;
+
+   switch (usartIndex) {
+
+      case 0 :
+         lpcDeviceIrqId = UART0_IRQn;
+         break;
+
+      case 1 :
+         lpcDeviceIrqId = UART1_IRQn;
+         break;
+
+      case 2 :
+         lpcDeviceIrqId = UART2_IRQn;
+         break;
+
+      case 3 :
+         lpcDeviceIrqId = UART3_IRQn;
+         break;
+
+      default :
+         lpcDeviceIrqId = UART0_IRQn;
+         break;
+   }
+
+   return lpcDeviceIrqId;
+}
+
+
+inline LPC_USART_T ciaaDriverUartLpc54102_getLpcDeviceIdFromUsartIndex(int32_t usartIndex)
 {
    LPC_USART_T lpcDevice;
 
@@ -195,7 +225,6 @@ inline LPC_USART_T ciaaDriverUartLpc54102_getLpcDeviceFromUsartIndex(int32_t usa
 
    return lpcDeviceId;
 }
-
 
 
 inline uint32_t ciaaDriverUartLpc54102_EnabledInts(LPC_FIFO_T *pFIFO, int usartIndex)
@@ -290,7 +319,7 @@ void ciaaDriverUartLpc54102_InitializeControlStructures()
    {
       usartIndex  = ciaaDriverUartLpc54102DeviceDescription[devIndex].usartIndex;
 
-      lpcDeviceId = ciaaDriverUartLpc54102_getLpcDeviceFromUsartIndex(usartIndex);
+      lpcDeviceId = ciaaDriverUartLpc54102_getLpcDeviceIdFromUsartIndex(usartIndex);
 
       /*
        * Build the backwards map from usartIndex to devIndex
@@ -439,7 +468,7 @@ void ciaaDriverUartLpc54102_hardwareInit()
 
    for (devIndex = 0; devIndex < CIAA_DRIVER_USART_LPC54102_DEVICE_TABLE_SIZE; devIndex++)
    {
-      lpcDeviceId = ciaaDriverUartLpc54102_getLpcDeviceFromUsartIndex(ciaaDriverUartLpc54102DeviceDescription[devIndex].usartIndex);
+      lpcDeviceId = ciaaDriverUartLpc54102_getLpcDeviceIdFromUsartIndex(ciaaDriverUartLpc54102DeviceDescription[devIndex].usartIndex);
 
       Chip_UART_Init(lpcDeviceId);
 
@@ -459,7 +488,7 @@ void ciaaDriverUartLpc54102_hardwareInit()
             ciaaDriverUartLpc54102DeviceDescription[devIndex].defaultBaudrate);
 
       NVIC_EnableIRQ(
-            ciaaDriverUartLpc54102DeviceDescription[devIndex].lpcNvicInterrupt);
+            ciaaDriverUartLpc54102_getLpcIrqIdFromUsartIndex(ciaaDriverUartLpc54102DeviceDescription[devIndex].usartIndex));
 
       Chip_IOCON_PinMux(
             LPC_IOCON,
@@ -636,7 +665,7 @@ extern int32_t ciaaDriverUart_ioctl(ciaaDevices_deviceType const * const device,
           * since they all share the same fractional divider.
           * */
          Chip_UART_SetBaud(
-               ciaaDriverUartLpc54102_getLpcDeviceFromUsartIndex(dev->usartIndex),
+               ciaaDriverUartLpc54102_getLpcDeviceIdFromUsartIndex(dev->usartIndex),
                (int32_t)param);
          ret = 0;
          break;
