@@ -60,40 +60,6 @@
 
 
 
-/*
- * Standard configuration for INPUT GPIO pins.
- * */
-
-/* MODE for Port 0, Pins 0 to 22 */
-#define CIAA_DRIVER_DIO_LPC54102_DEFAULT_INPUT_PIN_MODE_PIO0_00TO22     (IOCON_DIGITAL_EN | IOCON_INP_FILTER_ON | IOCON_MODE_PULLUP)
-/* MODE for Port 0, Pins 23 to 28 */
-#define CIAA_DRIVER_DIO_LPC54102_DEFAULT_INPUT_PIN_MODE_PIO0_23TO28     (IOCON_DIGITAL_EN | IOCON_INP_FILTER_ON )
-/* MODE for Port 0, Pins 29 to 31 */
-#define CIAA_DRIVER_DIO_LPC54102_DEFAULT_INPUT_PIN_MODE_PIO0_29TO31     (IOCON_DIGITAL_EN | IOCON_INP_FILTER_ON | IOCON_MODE_PULLUP)
-
-/* MODE for Port 1, Pins 0 to 08 */
-#define CIAA_DRIVER_DIO_LPC54102_DEFAULT_INPUT_PIN_MODE_PIO1_00TO08     (IOCON_DIGITAL_EN | IOCON_INP_FILTER_ON | IOCON_MODE_PULLUP)
-/* MODE for Port 1, Pins 9 to 17 */
-#define CIAA_DRIVER_DIO_LPC54102_DEFAULT_INPUT_PIN_MODE_PIO1_09TO17     (IOCON_DIGITAL_EN | IOCON_INP_FILTER_ON | IOCON_MODE_PULLUP)
-
-
-/*
- * Standard configuration for OUPTUT GPIO pins.
- * */
-
-/* MODE for Port 0, Pins 0 to 22 */
-#define CIAA_DRIVER_DIO_LPC54102_DEFAULT_OUTPUT_PIN_MODE_PIO0_00TO22     (IOCON_DIGITAL_EN)
-/* MODE for Port 0, Pins 23 to 28 */
-#define CIAA_DRIVER_DIO_LPC54102_DEFAULT_OUTPUT_PIN_MODE_PIO0_23TO28     (IOCON_DIGITAL_EN)
-/* MODE for Port 0, Pins 29 to 31 */
-#define CIAA_DRIVER_DIO_LPC54102_DEFAULT_OUTPUT_PIN_MODE_PIO0_29TO31     (IOCON_DIGITAL_EN)
-
-/* MODE for Port 1, Pins 0 to 08 */
-#define CIAA_DRIVER_DIO_LPC54102_DEFAULT_OUTPUT_PIN_MODE_PIO1_00TO08     (IOCON_DIGITAL_EN)
-/* MODE for Port 1, Pins 9 to 17 */
-#define CIAA_DRIVER_DIO_LPC54102_DEFAULT_OUTPUT_PIN_MODE_PIO9_09TO17     (IOCON_DIGITAL_EN)
-
-
 #define CIAA_DRIVER_DIO_LPC54102_INPUT_PIN_COUNT    (sizeof(ciaaDriverDioLpc54102Inputs) / sizeof(ciaaDriverDioPinDescriptionType))
 
 #define CIAA_DRIVER_DIO_LPC54102_OUTPUT_PIN_COUNT   (sizeof(ciaaDriverDioLpc54102Outputs) / sizeof(ciaaDriverDioPinDescriptionType))
@@ -190,104 +156,6 @@ const static ciaaDevices_deviceType * const ciaaDriverDioLpc54102DevicesList[] =
 
 
 
-static uint32_t ciaaDriverDioLpc54102_determineInputPinMode(uint32_t port, uint32_t pin)
-{
-   uint32_t mode;
-
-   mode = 0;
-
-   if (port == 0)
-   {
-      if ((pin >= 0) && (pin <= 22))
-      {
-         mode = CIAA_DRIVER_DIO_LPC54102_DEFAULT_INPUT_PIN_MODE_PIO0_00TO22;
-
-      } else {
-
-         if ((pin >= 23) && (pin <= 28))
-         {
-            mode = CIAA_DRIVER_DIO_LPC54102_DEFAULT_INPUT_PIN_MODE_PIO0_23TO28;
-
-         } else {
-
-            if ((pin >= 29) && (pin <= 31))
-            {
-               mode = CIAA_DRIVER_DIO_LPC54102_DEFAULT_INPUT_PIN_MODE_PIO0_29TO31;
-            }
-         }
-      }
-   }
-
-
-   if (port == 1)
-   {
-      if ((pin >= 0) && (pin <= 8))
-      {
-         mode = CIAA_DRIVER_DIO_LPC54102_DEFAULT_INPUT_PIN_MODE_PIO1_00TO08;
-
-      } else {
-
-         if ((pin >= 09) && (pin <= 17))
-         {
-            mode = CIAA_DRIVER_DIO_LPC54102_DEFAULT_INPUT_PIN_MODE_PIO1_09TO17;
-
-         }
-      }
-   }
-
-   return mode;
-}
-
-
-static void ciaaDriverDioLpc54102_determineOutputPinMode(uint32_t port, uint32_t pin)
-{
-   uint32_t mode;
-
-   mode = 0;
-
-   if (port == 0)
-   {
-      if ((pin >= 0) && (pin <= 22))
-      {
-         mode = CIAA_DRIVER_DIO_LPC54102_DEFAULT_OUTPUT_PIN_MODE_PIO0_00TO22;
-
-      } else {
-
-         if ((pin >= 23) && (pin <= 28))
-         {
-            mode = CIAA_DRIVER_DIO_LPC54102_DEFAULT_OUTPUT_PIN_MODE_PIO0_23TO28;
-
-         } else {
-
-            if ((pin >= 29) && (pin <= 31))
-            {
-               mode = CIAA_DRIVER_DIO_LPC54102_DEFAULT_OUTPUT_PIN_MODE_PIO0_29TO31;
-            }
-         }
-      }
-   }
-
-
-   if (port == 1)
-   {
-      if ((pin >= 0) && (pin <= 8))
-      {
-         mode = CIAA_DRIVER_DIO_LPC54102_DEFAULT_OUTPUT_PIN_MODE_PIO1_00TO08;
-
-      } else {
-
-         if ((pin >= 09) && (pin <= 17))
-         {
-            mode = CIAA_DRIVER_DIO_LPC54102_DEFAULT_OUTPUT_PIN_MODE_PIO1_09TO17;
-
-         }
-      }
-   }
-
-   return mode;
-}
-
-
 static void ciaaDriverDioLpc54102_registerDevices()
 {
    uint8_t devIndex;
@@ -312,7 +180,7 @@ static void ciaaDriverDioLpc54102_hardwareInit(void)
 
    for (gpioIndex = 0; gpioIndex < CIAA_DRIVER_DIO_LPC54102_INPUT_PIN_COUNT; gpioIndex++)
    {
-      mode = ciaaDriverDioLpc54102_determineInputPinMode(
+      mode = ciaaDriverCommonLpc54102_determineInputPinMode(
             ciaaDriverDioLpc54102Inputs[gpioIndex].port,
             ciaaDriverDioLpc54102Inputs[gpioIndex].pin);
 
@@ -336,7 +204,7 @@ static void ciaaDriverDioLpc54102_hardwareInit(void)
 
    for (gpioIndex = 0; gpioIndex < CIAA_DRIVER_DIO_LPC54102_OUTPUT_PIN_COUNT; gpioIndex++)
    {
-      mode = ciaaDriverDioLpc54102_determineOutputPinMode(
+      mode = ciaaDriverCommonLpc54102_determineOutputPinMode(
             ciaaDriverDioLpc54102Outputs[gpioIndex].port,
             ciaaDriverDioLpc54102Outputs[gpioIndex].pin);
 
