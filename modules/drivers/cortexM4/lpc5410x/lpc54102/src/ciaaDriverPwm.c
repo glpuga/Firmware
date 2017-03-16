@@ -112,7 +112,7 @@ const lpc54102PwmConfigurationStructuresType lpc54102PwmConfigurationStructures[
                   CIAA_DRIVER_PWM_LPC54102_MODE_PWM   /* operatingMode      */
             },
             {
-               2,                                     /* pwmIndex           */
+                  2,                                  /* pwmIndex           */
                   "pwm/1",                            /* posixName          */
                   1,                                  /* sctOutputPinIndex  */
                   0,                                  /* lpcIoconPort       */
@@ -265,12 +265,52 @@ extern ssize_t ciaaDriverPwm_write(ciaaDevices_deviceType const * const device, 
 
    if (size > 0)
    {
-      if ((buffer[size - 1] >= 0) && (buffer[size - 1] <= 100))
+
+      if (dev->operatingMode == CIAA_DRIVER_PWM_LPC54102_MODE_PWM)
       {
-         ticks = Chip_SCTPWM_PercentageToTicks(
-               LPC_SCT0,
-               dev->pwmIndex,
-               buffer[size - 1]);
+         /*
+          * PWM MODE
+          *
+          * The input is a percentage (0 to 100) indicating the PWM signal PWM duty cycle.
+          * */
+
+         if ((buffer[size - 1] >= 0) && (buffer[size - 1] <= 100))
+         {
+            ticks = Chip_SCTPWM_PercentageToTicks(
+                  LPC_SCT0,
+                  dev->pwmIndex,
+                  buffer[size - 1]);
+
+            Chip_SCTPWM_SetDutyCycle(
+                  LPC_SCT0,
+                  dev->pwmIndex,
+                  ticks);
+
+            ret = 0;
+
+         } else {
+
+            ret = -1;
+         }
+
+      } else {
+
+         /*
+          * SERVO MODE
+          *
+          * In this case, the input value is the width of the active pulse
+          * measured in 1/100'ths of a millisecond.
+          *
+          *    100 = 1.00 ms.
+          *    255 = 2.55 ms.
+          *
+          * Normally this would go from 100 to 200, since that is the valid range for most servos,
+          * but since there might be reasons to go outside that range, no additional validation
+          * is made on the value.
+          *
+          * */
+
+         ticks = ((Chip_Clock_GetSystemClockRate() / 1000) * ((uint32_t)buffer[size - 1])) / 100;
 
          Chip_SCTPWM_SetDutyCycle(
                LPC_SCT0,
@@ -278,10 +318,6 @@ extern ssize_t ciaaDriverPwm_write(ciaaDevices_deviceType const * const device, 
                ticks);
 
          ret = 0;
-
-      } else {
-
-         ret = -1;
       }
    }
 
