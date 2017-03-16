@@ -31,10 +31,10 @@
  *
  */
 
-#ifndef _CIAADRIVERPULSECAPTURE_H_
-#define _CIAADRIVERPULSECAPTURE_H_
+#ifndef _CIAADRIVERENCODER_H_
+#define _CIAADRIVERENCODER_H_
 
-/** \brief CIAA Pulse Capture driver header file
+/** \brief CIAA Encoder driver header file
  **
  ** This files contains the header file of the CIAA UART driver
  **
@@ -44,7 +44,7 @@
  ** @{ */
 /** \addtogroup Drivers CIAA Drivers
  ** @{ */
-/** \addtogroup Pulse Pulse Drivers
+/** \addtogroup ENCODER ENCODER Drivers
  ** @{ */
 
 /*==================[inclusions]=============================================*/
@@ -52,7 +52,7 @@
 
 
 #include "ciaaPOSIX_stdint.h"
-#include "ciaaSerialDevices.h"
+#include "ciaaDioDevices.h"
 
 
 
@@ -94,7 +94,7 @@ extern "C" {
  ** \return NULL if an error occurs, in other case the address of the opened
  **         device.
  **/
-extern ciaaDevices_deviceType * ciaaDriverPulseCapture_open(char const * path,
+extern ciaaDevices_deviceType * ciaaDriverEncoder_open(char const * path,
       ciaaDevices_deviceType * device, uint8_t const oflag);
 
 
@@ -104,7 +104,7 @@ extern ciaaDevices_deviceType * ciaaDriverPulseCapture_open(char const * path,
  ** \param[in] device pointer to device
  ** \return    -1 if failed, 0 if success.
  **/
-extern int32_t ciaaDriverPulseCapture_close(ciaaDevices_deviceType const * const device);
+extern int32_t ciaaDriverEncoder_close(ciaaDevices_deviceType const * const device);
 
 
 /** \brief controls the uart device
@@ -117,7 +117,7 @@ extern int32_t ciaaDriverPulseCapture_close(ciaaDevices_deviceType const * const
  ** \return    a negative value if failed, a positive value
  **            if success.
  **/
-extern int32_t ciaaDriverPulseCapture_ioctl(ciaaDevices_deviceType const * const device, int32_t const request, void * param);
+extern int32_t ciaaDriverEncoder_ioctl(ciaaDevices_deviceType const * const device, int32_t const request, void * param);
 
 
 /** \brief read from a uart device
@@ -129,7 +129,7 @@ extern int32_t ciaaDriverPulseCapture_ioctl(ciaaDevices_deviceType const * const
  ** \param[in]  nbyte   count of bytes to be read
  ** \return     the count of read bytes is returned
  **/
-extern ssize_t ciaaDriverPulseCapture_read(ciaaDevices_deviceType const * const device, uint8_t * const buffer, size_t const size);
+extern ssize_t ciaaDriverEncoder_read(ciaaDevices_deviceType const * const device, uint8_t * const buffer, size_t const size);
 
 
 /** \brief writes to a uart device
@@ -141,7 +141,7 @@ extern ssize_t ciaaDriverPulseCapture_read(ciaaDevices_deviceType const * const 
  ** \param[in]  nbyte   count of bytes to be written
  ** \return     the count of bytes written
  **/
-extern ssize_t ciaaDriverPulseCapture_write(ciaaDevices_deviceType const * const device, uint8_t const * const buffer, size_t const size);
+extern ssize_t ciaaDriverEncoder_write(ciaaDevices_deviceType const * const device, uint8_t const * const buffer, size_t const size);
 
 
 /** \brief initialize the uart deriver
@@ -149,7 +149,7 @@ extern ssize_t ciaaDriverPulseCapture_write(ciaaDevices_deviceType const * const
  ** Is called at system startup, the driver shall register all available uart
  ** devices.
  **/
-extern void ciaaDriverPulseCapture_init(void);
+extern void ciaaDriverEncoder_init(void);
 
 
 
@@ -166,5 +166,5 @@ extern void ciaaDriverPulseCapture_init(void);
 /** @} doxygen end group definition */
 /** @} doxygen end group definition */
 /*==================[end of file]============================================*/
-#endif /* #ifndef _CIAADRIVERPULSECAPTURE_H_ */
+#endif /* #ifndef _CIAADRIVERENCODER_H_ */
 

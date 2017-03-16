@@ -44,7 +44,7 @@
  ** @{ */
 /** \addtogroup Drivers CIAA Drivers
  ** @{ */
-/** \addtogroup PWM UART Drivers
+/** \addtogroup PWM PWM Drivers
  ** @{ */
 
 /*==================[inclusions]=============================================*/
@@ -52,7 +52,7 @@
 
 
 #include "ciaaPOSIX_stdint.h"
-#include "ciaaSerialDevices.h"
+#include "ciaaDioDevices.h"
 
 
 
