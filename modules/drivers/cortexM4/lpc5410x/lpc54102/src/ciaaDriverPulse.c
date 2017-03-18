@@ -49,6 +49,7 @@
 
 
 
+#include "ciaaDriverConfig.h"
 #include "ciaaDriverPulse.h"
 #include "chip.h"
 

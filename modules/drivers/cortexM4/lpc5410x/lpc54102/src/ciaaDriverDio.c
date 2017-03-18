@@ -49,6 +49,7 @@
 
 
 
+#include "ciaaDriverConfig.h"
 #include "ciaaDriverDio.h"
 #include "ciaaDriverCommon.h"
 #include "ciaaPOSIX_stdlib.h"
@@ -108,6 +109,7 @@ const ciaaDriverDioPinDescriptionType ciaaDriverDioLpc54102Inputs[] = {
       {  1,  13 },   /* IN/0 [ 7] */
       {  1,  12 }    /* IN/0 [ 8] */
 };
+
 
 const ciaaDriverDioPinDescriptionType ciaaDriverDioLpc54102Outputs[] = {
       {  0,  29 },   /* OUT/0 [ 0] - LED R */

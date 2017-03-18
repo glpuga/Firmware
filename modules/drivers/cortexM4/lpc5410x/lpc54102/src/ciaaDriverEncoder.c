@@ -49,6 +49,7 @@
 
 
 
+#include "ciaaDriverConfig.h"
 #include "ciaaDriverEncoder.h"
 #include "chip.h"
 
@@ -58,7 +59,7 @@
 
 
 
-#define CIAA_DRIVER_ENCODER_LPC54102_GRAY_ENCODERS         (sizeof(lpc54102EncoderDescriptionStructures) / sizeof(lpc54102EncoderDescriptionStructuresType))
+#define CIAA_DRIVER_ENCODER_LPC54102_GRAY_ENCODERS               (sizeof(lpc54102EncoderDescriptionStructures) / sizeof(lpc54102EncoderDescriptionStructuresType))
 
 #define CIAA_DRIVER_ENCODER_LPC54102_ENCODER_GRAY_POS_UNKNOWN    0x0f
 #define CIAA_DRIVER_ENCODER_LPC54102_ENCODER_GRAY_POS_00         0x00

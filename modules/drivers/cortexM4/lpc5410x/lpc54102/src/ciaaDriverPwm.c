@@ -49,6 +49,7 @@
 
 
 
+#include "ciaaDriverConfig.h"
 #include "ciaaDriverPwm.h"
 #include "chip.h"
 
@@ -60,11 +61,8 @@
 
 #define CIAA_DRIVER_PWM_LPC54102_PWM_PORTS         (sizeof(lpc54102PwmConfigurationStructures) / sizeof(lpc54102PwmConfigurationStructuresType))
 
-#define CIAA_DRIVER_PWM_LPC54102_PWM_RATE          1000
-
-#define CIAA_DRIVER_PWM_LPC54102_SERVO_RATE        50
-
 #define CIAA_DRIVER_PWM_LPC54102_MODE_PWM          0
+
 #define CIAA_DRIVER_PWM_LPC54102_MODE_SERVO        1
 
 
@@ -109,7 +107,7 @@ const lpc54102PwmConfigurationStructuresType lpc54102PwmConfigurationStructures[
                   10,                                 /* lpcIoconPin             */
                   (IOCON_DIGITAL_EN),                 /* lpcIoconMode            */
                   (IOCON_FUNC2),                      /* lpcIoconFunc            */
-                  CIAA_DRIVER_PWM_LPC54102_MODE_PWM   /* operatingMode           */
+                  CIAA_DRIVER_PWM_CHANNEL_0_MODE      /* operatingMode           */
             },
             {
                   2,                                  /* sctMatchRegisterIndex   */
@@ -119,7 +117,7 @@ const lpc54102PwmConfigurationStructuresType lpc54102PwmConfigurationStructures[
                   14,                                 /* lpcIoconPin             */
                   (IOCON_DIGITAL_EN),                 /* lpcIoconMode            */
                   (IOCON_FUNC2),                      /* lpcIoconFunc            */
-                  CIAA_DRIVER_PWM_LPC54102_MODE_PWM   /* operatingMode           */
+                  CIAA_DRIVER_PWM_CHANNEL_1_MODE      /* operatingMode           */
             },
             {
                   3,                                  /* sctMatchRegisterIndex   */
@@ -129,7 +127,7 @@ const lpc54102PwmConfigurationStructuresType lpc54102PwmConfigurationStructures[
                   13,                                 /* lpcIoconPin             */
                   (IOCON_DIGITAL_EN),                 /* lpcIoconMode            */
                   (IOCON_FUNC2),                      /* lpcIoconFunc            */
-                  CIAA_DRIVER_PWM_LPC54102_MODE_SERVO /* operatingMode           */
+                  CIAA_DRIVER_PWM_CHANNEL_2_MODE      /* operatingMode           */
             },
             {
                   4,                                  /* sctMatchRegisterIndex   */
@@ -139,7 +137,7 @@ const lpc54102PwmConfigurationStructuresType lpc54102PwmConfigurationStructures[
                   18,                                 /* lpcIoconPin             */
                   (IOCON_DIGITAL_EN)                  /* lpcIoconMode            */
                   (IOCON_FUNC2),                      /* lpcIoconFunc            */
-                  CIAA_DRIVER_PWM_LPC54102_MODE_SERVO /* operatingMode           */
+                  CIAA_DRIVER_PWM_CHANNEL_3_MODE      /* operatingMode           */
             }
       };
 

@@ -49,6 +49,7 @@
 
 
 
+#include "ciaaDriverConfig.h"
 #include "ciaaDriverAio.h"
 #include "ciaaDriverCommon.h"
 #include "chip.h"
@@ -60,9 +61,6 @@
 
 
 #define CIAA_DRIVER_AIO_LPC54102_ADC_PORTS         (sizeof(lpc54102AioConfigurationStructures) / sizeof(lpc54102AioConfigurationStructuresType))
-
-#define CIAA_DRIVER_AIO_LPC54102_ADC_FREQUENCY     10000000
-
 
 typedef struct {
 
@@ -198,7 +196,7 @@ void ciaaDriverAioLpc54102_hardwareInit()
 
    Chip_ADC_SetClockRate(
          LPC_ADC,
-         CIAA_DRIVER_AIO_LPC54102_ADC_FREQUENCY);
+         CIAA_DRIVER_AIO_LPC54102_ADC_CLOCK_RATE);
 
    /*
     * Set the corresponding input pins in a safe mode, digital with
