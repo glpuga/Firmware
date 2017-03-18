@@ -92,9 +92,39 @@ typedef struct {
 const lpc54102AdcConfigurationStructuresType lpc54102AdcConfigurationStructures[] =
       {
             {
-                  1,                                  /* adcIndex           */
+                  9,                                  /* adcIndex           */
                   "adc/0",                            /* posixName          */
-                  0,                                  /* lpcIoconPort       */
+                  1,                                  /* lpcIoconPort       */
+                  6                                   /* lpcIoconPin        */
+            },
+            {
+                  7,                                  /* adcIndex           */
+                  "adc/1",                            /* posixName          */
+                  1,                                  /* lpcIoconPort       */
+                  4                                   /* lpcIoconPin        */
+            },
+            {
+                  6,                                  /* adcIndex           */
+                  "adc/2",                            /* posixName          */
+                  1,                                  /* lpcIoconPort       */
+                  3                                   /* lpcIoconPin        */
+            },
+            {
+                  5,                                  /* adcIndex           */
+                  "adc/3",                            /* posixName          */
+                  1,                                  /* lpcIoconPort       */
+                  2                                   /* lpcIoconPin        */
+            },
+            {
+                  4,                                  /* adcIndex           */
+                  "adc/4",                            /* posixName          */
+                  1,                                  /* lpcIoconPort       */
+                  1                                   /* lpcIoconPin        */
+            },
+            {
+                  3,                                  /* adcIndex           */
+                  "adc/5",                            /* posixName          */
+                  1,                                  /* lpcIoconPort       */
                   0                                   /* lpcIoconPin        */
             }
       };

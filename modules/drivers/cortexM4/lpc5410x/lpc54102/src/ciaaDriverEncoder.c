@@ -110,18 +110,18 @@ const lpc54102EncoderDescriptionStructuresType lpc54102EncoderDescriptionStructu
       {
             0,                            /* encoderIndex   */
             "enc/0",                      /* posixName      */
-            0,                            /* lpcIoconPort1  */
-            0,                            /* lpcIoconPort2  */
-            0,                            /* lpcIoconPin1   */
-            0                             /* lpcIoconPin2   */
+            1,                            /* lpcIoconPort1  */
+            1,                            /* lpcIoconPort2  */
+            10,                           /* lpcIoconPin1   */
+            9                             /* lpcIoconPin2   */
       },
       {
-            0,                            /* encoderIndex   */
+            1,                            /* encoderIndex   */
             "enc/1",                      /* posixName      */
             0,                            /* lpcIoconPort1  */
-            0,                            /* lpcIoconPort2  */
-            0,                            /* lpcIoconPin1   */
-            0                             /* lpcIoconPin2   */
+            1,                            /* lpcIoconPort2  */
+            21,                           /* lpcIoconPin1   */
+            15                            /* lpcIoconPin2   */
       }
 };
 

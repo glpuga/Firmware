@@ -104,41 +104,41 @@ const lpc54102PwmConfigurationStructuresType lpc54102PwmConfigurationStructures[
             {
                   1,                                  /* pwmIndex           */
                   "pwm/0",                            /* posixName          */
-                  0,                                  /* sctOutputPinIndex  */
+                  3,                                  /* sctOutputPinIndex  */
                   0,                                  /* lpcIoconPort       */
-                  0,                                  /* lpcIoconPin        */
+                  10,                                 /* lpcIoconPin        */
                   (IOCON_DIGITAL_EN),                 /* lpcIoconMode       */
-                  0,                                  /* lpcIoconFunc       */
+                  (IOCON_FUNC2),                      /* lpcIoconFunc       */
                   CIAA_DRIVER_PWM_LPC54102_MODE_PWM   /* operatingMode      */
             },
             {
                   2,                                  /* pwmIndex           */
                   "pwm/1",                            /* posixName          */
-                  1,                                  /* sctOutputPinIndex  */
+                  5,                                  /* sctOutputPinIndex  */
                   0,                                  /* lpcIoconPort       */
-                  0,                                  /* lpcIoconPin        */
+                  14,                                 /* lpcIoconPin        */
                   (IOCON_DIGITAL_EN),                 /* lpcIoconMode       */
-                  0,                                  /* lpcIoconFunc       */
+                  (IOCON_FUNC2),                      /* lpcIoconFunc       */
                   CIAA_DRIVER_PWM_LPC54102_MODE_PWM   /* operatingMode      */
             },
             {
                   3,                                  /* pwmIndex           */
                   "srv/0",                            /* posixName          */
-                  2,                                  /* sctOutputPinIndex  */
+                  4,                                  /* sctOutputPinIndex  */
                   0,                                  /* lpcIoconPort       */
-                  0,                                  /* lpcIoconPin        */
+                  13,                                 /* lpcIoconPin        */
                   (IOCON_DIGITAL_EN),                 /* lpcIoconMode       */
-                  0,                                  /* lpcIoconFunc       */
+                  (IOCON_FUNC2),                      /* lpcIoconFunc       */
                   CIAA_DRIVER_PWM_LPC54102_MODE_SERVO /* operatingMode      */
             },
             {
                   4,                                  /* pwmIndex           */
                   "srv/1",                            /* posixName          */
-                  3,                                  /* sctOutputPinIndex  */
+                  0,                                  /* sctOutputPinIndex  */
                   0,                                  /* lpcIoconPort       */
-                  0,                                  /* lpcIoconPin        */
+                  18,                                 /* lpcIoconPin        */
                   (IOCON_DIGITAL_EN)                  /* lpcIoconMode       */
-                  0,                                  /* lpcIoconFunc       */
+                  (IOCON_FUNC2),                      /* lpcIoconFunc       */
                   CIAA_DRIVER_PWM_LPC54102_MODE_SERVO /* operatingMode      */
             }
       };

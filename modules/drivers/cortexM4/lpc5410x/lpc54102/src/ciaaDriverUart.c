@@ -127,20 +127,52 @@ typedef struct {
 const ciaaDriverUartLpc54102DeviceDescriptionType ciaaDriverUartLpc54102DeviceDescription[] =
       {
             {
-                  0,                                              /* usartIndex       */
+                  1,                                              /* usartIndex       */
                   "uart/0",                                       /* posixName        */
                   8,                                              /* txFifoSize       */
                   8,                                              /* rxFifoSize       */
                   CIAA_DRIVER_USART_LPC54102_DEFAULT_BAUDRATE,    /* defaultBaudrate  */
                   CIAA_DRIVER_USART_LPC54102_DEFAULT_CONFIG,      /* defaultConfig    */
                   0,                                              /* lpcIoconTxPort     */
-                  0,                                              /* lpcIoconTxPin      */
-                  0,                                              /* lpcIoconTxMode     */
-                  0,                                              /* lpcIoconTxFunc     */
+                  6,                                              /* lpcIoconTxPin      */
+                  (IOCON_DIGITAL_EN),                             /* lpcIoconTxMode     */
+                  (IOCON_FUNC1),                                  /* lpcIoconTxFunc     */
+                  0,                                              /* lpcIoconRxPort     */
+                  5,                                              /* lpcIoconRxPin      */
+                  (IOCON_DIGITAL_EN | IOCON_MODE_PULLUP),         /* lpcIoconRxMode     */
+                  (IOCON_FUNC1)                                   /* lpcIoconRxFunc     */
+            },
+            {
+                  2,                                              /* usartIndex       */
+                  "uart/1",                                       /* posixName        */
+                  4,                                              /* txFifoSize       */
+                  4,                                              /* rxFifoSize       */
+                  CIAA_DRIVER_USART_LPC54102_DEFAULT_BAUDRATE,    /* defaultBaudrate  */
+                  CIAA_DRIVER_USART_LPC54102_DEFAULT_CONFIG,      /* defaultConfig    */
+                  0,                                              /* lpcIoconTxPort     */
+                  9,                                              /* lpcIoconTxPin      */
+                  (IOCON_DIGITAL_EN),                             /* lpcIoconTxMode     */
+                  (IOCON_FUNC1),                                  /* lpcIoconTxFunc     */
+                  0,                                              /* lpcIoconRxPort     */
+                  8,                                              /* lpcIoconRxPin      */
+                  (IOCON_DIGITAL_EN | IOCON_MODE_PULLUP),         /* lpcIoconRxMode     */
+                  (IOCON_FUNC1)                                   /* lpcIoconRxFunc     */
+            },
+            {
+                  0,                                              /* usartIndex       */
+                  "console/0",                                    /* posixName        */
+                  4,                                              /* txFifoSize       */
+                  4,                                              /* rxFifoSize       */
+                  CIAA_DRIVER_USART_LPC54102_DEFAULT_BAUDRATE,    /* defaultBaudrate  */
+                  CIAA_DRIVER_USART_LPC54102_DEFAULT_CONFIG,      /* defaultConfig    */
+                  0,                                              /* lpcIoconTxPort     */
+                  1,                                              /* lpcIoconTxPin      */
+                  (IOCON_DIGITAL_EN),                             /* lpcIoconTxMode     */
+                  (IOCON_FUNC1),                                  /* lpcIoconTxFunc     */
                   0,                                              /* lpcIoconRxPort     */
                   0,                                              /* lpcIoconRxPin      */
-                  0,                                              /* lpcIoconRxMode     */
-                  0                                               /* lpcIoconRxFunc     */
+                  (IOCON_DIGITAL_EN | IOCON_MODE_PULLUP),         /* lpcIoconRxMode     */
+                  (IOCON_FUNC1)                                   /* lpcIoconRxFunc     */
             }
       };
 

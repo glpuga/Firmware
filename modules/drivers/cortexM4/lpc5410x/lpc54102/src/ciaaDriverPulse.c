@@ -71,7 +71,7 @@
 
 typedef struct {
 
-   int32_t timerIndex;
+   int32_t timerIndex;              /* Timer index number, 0 to 3 */
 
    char const * posixName;          /* Name of the device on the POSIX device tree. */
 
@@ -115,14 +115,23 @@ const LPC_TIMER_T ciaaDriverPulseCaptureLpc54102PulseCaptureTimers[] = { LPC_TIM
 const ciaaDriverPulseCaptureLpc54102PulseCaptureDeviceDescriptionType ciaaDriverPulseCaptureLpc54102PulseCaptureDeviceDescriptionTable[] =
       {
             {
-                  0,                                              /* timerIndex        */
+                  1,                                              /* timerIndex        */
                   "pulse/0",                                      /* posixName         */
-                  0,                                              /* lpcIoconPort      */
-                  0,                                              /* lpcIoconPin       */
-                  0,                                              /* lpcIoconMode      */
-                  0                                              /* lpcIoconFunc      */
+                  1,                                              /* lpcIoconPort      */
+                  5,                                              /* lpcIoconPin       */
+                  (IOCON_DIGITAL_EN),                             /* lpcIoconMode      */
+                  (IOCON_FUNC3)                                   /* lpcIoconFunc      */
+            },
+            {
+                  0,                                              /* timerIndex        */
+                  "pulse/1",                                      /* posixName         */
+                  1,                                              /* lpcIoconPort      */
+                  16,                                             /* lpcIoconPin       */
+                  (IOCON_DIGITAL_EN),                             /* lpcIoconMode      */
+                  (IOCON_FUNC3)                                   /* lpcIoconFunc      */
             }
       };
+
 
 ciaaDevices_deviceType ciaaDriverPulseCaptureLpc54102PosixRegistrationTable[CIAA_DRIVER_PULSE_CAPTURE_LPC54102_CAPTURE_PORTS];
 
