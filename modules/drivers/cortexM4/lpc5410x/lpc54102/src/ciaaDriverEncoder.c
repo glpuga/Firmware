@@ -126,7 +126,7 @@ const lpc54102EncoderDescriptionStructuresType lpc54102EncoderDescriptionStructu
 };
 
 
-ciaaDevices_deviceType lpc54102PosixRegistrationDataTable[CIAA_DRIVER_ENCODER_LPC54102_ENCODER_PORTS];
+ciaaDevices_deviceType lpc54102EncoderPosixRegistrationDataTable[CIAA_DRIVER_ENCODER_LPC54102_ENCODER_PORTS];
 
 uint32_t lpc54102EncoderPreviousEncoderStatus[CIAA_DRIVER_ENCODER_LPC54102_ENCODER_PORTS];
 
@@ -149,18 +149,18 @@ void ciaaDriverEncoderLpc54102_InitializeControlStructures()
 
    for (devIndex = 0; devIndex < CIAA_DRIVER_ENCODER_LPC54102_ENCODER_PORTS; devIndex++)
    {
-      lpc54102PosixRegistrationDataTable[devIndex].path    = lpc54102EncoderConfigurationStructures[devIndex].posixName;
+      lpc54102EncoderPosixRegistrationDataTable[devIndex].path    = lpc54102EncoderConfigurationStructures[devIndex].posixName;
 
-      lpc54102PosixRegistrationDataTable[devIndex].open    = ciaaDriverEncoder_open;
-      lpc54102PosixRegistrationDataTable[devIndex].close   = ciaaDriverEncoder_close;
-      lpc54102PosixRegistrationDataTable[devIndex].read    = ciaaDriverEncoder_read;
-      lpc54102PosixRegistrationDataTable[devIndex].write   = ciaaDriverEncoder_write;
-      lpc54102PosixRegistrationDataTable[devIndex].ioctl   = ciaaDriverEncoder_ioctl;
-      lpc54102PosixRegistrationDataTable[devIndex].lseek   = NULL;
+      lpc54102EncoderPosixRegistrationDataTable[devIndex].open    = ciaaDriverEncoder_open;
+      lpc54102EncoderPosixRegistrationDataTable[devIndex].close   = ciaaDriverEncoder_close;
+      lpc54102EncoderPosixRegistrationDataTable[devIndex].read    = ciaaDriverEncoder_read;
+      lpc54102EncoderPosixRegistrationDataTable[devIndex].write   = ciaaDriverEncoder_write;
+      lpc54102EncoderPosixRegistrationDataTable[devIndex].ioctl   = ciaaDriverEncoder_ioctl;
+      lpc54102EncoderPosixRegistrationDataTable[devIndex].lseek   = NULL;
 
-      lpc54102PosixRegistrationDataTable[devIndex].upLayer = NULL;
-      lpc54102PosixRegistrationDataTable[devIndex].layer   = (void *)&lpc54102PosixRegistrationDataTable[devIndex];
-      lpc54102PosixRegistrationDataTable[devIndex].loLayer = NULL;
+      lpc54102EncoderPosixRegistrationDataTable[devIndex].upLayer = NULL;
+      lpc54102EncoderPosixRegistrationDataTable[devIndex].layer   = (void *)&lpc54102EncoderPosixRegistrationDataTable[devIndex];
+      lpc54102EncoderPosixRegistrationDataTable[devIndex].loLayer = NULL;
    }
 }
 
@@ -270,7 +270,7 @@ void ciaaDriverEncoderLpc54102_registerDevices()
 
    for (devIndex = 0; (devIndex < CIAA_DRIVER_ENCODER_LPC54102_ENCODER_PORTS) && (devIndex < 4); devIndex++)
    {
-      ciaaDioDevices_addDriver(&lpc54102PosixRegistrationDataTable[devIndex]);
+      ciaaDioDevices_addDriver(&lpc54102EncoderPosixRegistrationDataTable[devIndex]);
    }
 }
 

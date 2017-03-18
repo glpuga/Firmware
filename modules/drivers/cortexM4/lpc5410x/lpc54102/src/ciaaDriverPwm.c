@@ -144,7 +144,7 @@ const lpc54102PwmConfigurationStructuresType lpc54102PwmConfigurationStructures[
       };
 
 
-ciaaDevices_deviceType lpc54102PosixRegistrationDataTable[CIAA_DRIVER_PWM_LPC54102_PWM_PORTS];
+ciaaDevices_deviceType lpc54102PwmPosixRegistrationDataTable[CIAA_DRIVER_PWM_LPC54102_PWM_PORTS];
 
 
 
@@ -163,18 +163,18 @@ void ciaaDriverPwmLpc54102_InitializeControlStructures()
 
    for (devIndex = 0; devIndex < CIAA_DRIVER_PWM_LPC54102_PWM_PORTS; devIndex++)
    {
-      lpc54102PosixRegistrationDataTable[devIndex].path    = lpc54102PwmConfigurationStructures[devIndex].posixName;
+      lpc54102PwmPosixRegistrationDataTable[devIndex].path    = lpc54102PwmConfigurationStructures[devIndex].posixName;
 
-      lpc54102PosixRegistrationDataTable[devIndex].open    = ciaaDriverPwm_open;
-      lpc54102PosixRegistrationDataTable[devIndex].close   = ciaaDriverPwm_close;
-      lpc54102PosixRegistrationDataTable[devIndex].read    = ciaaDriverPwm_read;
-      lpc54102PosixRegistrationDataTable[devIndex].write   = ciaaDriverPwm_write;
-      lpc54102PosixRegistrationDataTable[devIndex].ioctl   = ciaaDriverPwm_ioctl;
-      lpc54102PosixRegistrationDataTable[devIndex].lseek   = NULL;
+      lpc54102PwmPosixRegistrationDataTable[devIndex].open    = ciaaDriverPwm_open;
+      lpc54102PwmPosixRegistrationDataTable[devIndex].close   = ciaaDriverPwm_close;
+      lpc54102PwmPosixRegistrationDataTable[devIndex].read    = ciaaDriverPwm_read;
+      lpc54102PwmPosixRegistrationDataTable[devIndex].write   = ciaaDriverPwm_write;
+      lpc54102PwmPosixRegistrationDataTable[devIndex].ioctl   = ciaaDriverPwm_ioctl;
+      lpc54102PwmPosixRegistrationDataTable[devIndex].lseek   = NULL;
 
-      lpc54102PosixRegistrationDataTable[devIndex].upLayer = NULL;
-      lpc54102PosixRegistrationDataTable[devIndex].layer   = (void *)&lpc54102PwmConfigurationStructures[devIndex];
-      lpc54102PosixRegistrationDataTable[devIndex].loLayer = NULL;
+      lpc54102PwmPosixRegistrationDataTable[devIndex].upLayer = NULL;
+      lpc54102PwmPosixRegistrationDataTable[devIndex].layer   = (void *)&lpc54102PwmConfigurationStructures[devIndex];
+      lpc54102PwmPosixRegistrationDataTable[devIndex].loLayer = NULL;
    }
 }
 
@@ -219,7 +219,7 @@ void ciaaDriverPwmLpc54102_registerDevices()
 
    for (devIndex = 0; devIndex < CIAA_DRIVER_PWM_LPC54102_PWM_PORTS; devIndex++)
    {
-      ciaaDioDevices_addDriver(&lpc54102PosixRegistrationDataTable[devIndex]);
+      ciaaDioDevices_addDriver(&lpc54102PwmPosixRegistrationDataTable[devIndex]);
    }
 }
 

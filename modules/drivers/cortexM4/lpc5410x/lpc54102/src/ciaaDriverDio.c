@@ -50,6 +50,7 @@
 
 
 #include "ciaaDriverDio.h"
+#include "ciaaDriverCommon.h"
 #include "ciaaPOSIX_stdlib.h"
 #include "ciaaPOSIX_string.h"
 #include "chip.h"
