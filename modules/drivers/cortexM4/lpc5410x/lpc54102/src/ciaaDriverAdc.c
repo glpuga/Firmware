@@ -66,7 +66,7 @@
 
 typedef struct {
 
-   int32_t adcIndex;
+   int32_t adcChannel;
 
    char const * posixName;       /* Name of the device on the POSIX device tree. */
 
@@ -92,37 +92,37 @@ typedef struct {
 const lpc54102AdcConfigurationStructuresType lpc54102AdcConfigurationStructures[] =
       {
             {
-                  9,                                  /* adcIndex           */
+                  9,                                  /* adcChannel         */
                   "adc/0",                            /* posixName          */
                   1,                                  /* lpcIoconPort       */
                   6                                   /* lpcIoconPin        */
             },
             {
-                  7,                                  /* adcIndex           */
+                  7,                                  /* adcChannel         */
                   "adc/1",                            /* posixName          */
                   1,                                  /* lpcIoconPort       */
                   4                                   /* lpcIoconPin        */
             },
             {
-                  6,                                  /* adcIndex           */
+                  6,                                  /* adcChannel         */
                   "adc/2",                            /* posixName          */
                   1,                                  /* lpcIoconPort       */
                   3                                   /* lpcIoconPin        */
             },
             {
-                  5,                                  /* adcIndex           */
+                  5,                                  /* adcChannel         */
                   "adc/3",                            /* posixName          */
                   1,                                  /* lpcIoconPort       */
                   2                                   /* lpcIoconPin        */
             },
             {
-                  4,                                  /* adcIndex           */
+                  4,                                  /* adcChannel         */
                   "adc/4",                            /* posixName          */
                   1,                                  /* lpcIoconPort       */
                   1                                   /* lpcIoconPin        */
             },
             {
-                  3,                                  /* adcIndex           */
+                  3,                                  /* adcChannel         */
                   "adc/5",                            /* posixName          */
                   1,                                  /* lpcIoconPort       */
                   0                                   /* lpcIoconPin        */
@@ -281,7 +281,7 @@ extern ssize_t ciaaDriverAdc_read(ciaaDevices_deviceType const * const device, u
       Chip_ADC_SetupSequencer(
             LPC_ADC,
             ADC_SEQA_IDX,
-            ADC_SEQ_CTRL_CHANSEL(dev->adcIndex));
+            ADC_SEQ_CTRL_CHANSEL(dev->adcChannel));
 
       Chip_ADC_EnableSequencer(
             LPC_ADC,
@@ -298,7 +298,7 @@ extern ssize_t ciaaDriverAdc_read(ciaaDevices_deviceType const * const device, u
 
       do {
 
-         dataRegister = Chip_ADC_GetDataReg(LPC_ADC, dev->adcIndex);
+         dataRegister = Chip_ADC_GetDataReg(LPC_ADC, dev->adcChannel);
 
       } while ((dataRegister & ADC_DR_DATAVALID) == 0);
 
