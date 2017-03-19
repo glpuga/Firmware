@@ -59,7 +59,8 @@ extern "C" {
 #if (x86 == ARCH)
 #include "stddef.h"
 #elif ( ( (cortexM4 == ARCH) && (lpc43xx == CPUTYPE) ) || \
-        ( (cortexM4 == ARCH) && (k60_120 == CPUTYPE) ) )
+      ( (cortexM4 == ARCH) && (k60_120 == CPUTYPE) ) || \
+      ( (cortexM4 == ARCH) && (lpc5410x == CPUTYPE) ) )
 #include "stddef.h"
 #elif ( (cortexM0 == ARCH) && (lpc43xx == CPUTYPE) )
 #include "stddef.h"

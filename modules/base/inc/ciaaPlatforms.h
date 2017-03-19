@@ -106,14 +106,14 @@ extern "C" {
 #define ia64                  2
 
 /*** CPUTYPES for ARCH=cortexM4 and ARCH=cortexM0 ***/
-#define lpc43xx               1
-#define lpc5410x              2
+#define lpc43xx               3
+#define lpc5410x              4
 
 /*** CPUTYPES for ARCH=cortexM4 ***/
-#define k60_120               2
+#define k60_120               5
 
 /*** CPUTYPES for ARCH=mips ***/
-#define pic32                 1
+#define pic32                 6
 
 
 
