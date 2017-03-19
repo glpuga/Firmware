@@ -57,6 +57,8 @@
 
 #if (BOARD == pico_ciaa)
 #include "ciaaDriverPwm.h"
+#include "ciaaDriverEncoder.h"
+#include "ciaaDriverPulse.h"
 #endif
 
 #include "ciaaPOSIX_stdlib.h"
@@ -98,9 +100,13 @@ void ciaak_start(void)
    ciaaDriverAio_init();
 
 #if (BOARD == pico_ciaa)
+
    ciaaDriverPwm_init();
+
    ciaaDriverPulseCapture_init();
-   ciaaDriverPulseEncoder_init();
+
+   ciaaDriverEncoder_init();
+
 #endif
 }
 

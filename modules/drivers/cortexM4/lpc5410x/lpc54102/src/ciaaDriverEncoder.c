@@ -49,8 +49,15 @@
 
 
 
-#include "ciaaDriverConfig.h"
 #include "ciaaDriverEncoder.h"
+#include "ciaaDriverConfig.h"
+#include "ciaaDriverCommon.h"
+#include "ciaaPOSIX_stdlib.h"
+#include "ciaaPOSIX_stdio.h"
+#include "os.h"
+
+#undef INLINE
+
 #include "chip.h"
 
 
@@ -59,7 +66,7 @@
 
 
 
-#define CIAA_DRIVER_ENCODER_LPC54102_GRAY_ENCODERS               (sizeof(lpc54102EncoderDescriptionStructures) / sizeof(lpc54102EncoderDescriptionStructuresType))
+#define CIAA_DRIVER_ENCODER_LPC54102_GRAY_ENCODERS               (sizeof(lpc54102EncoderDescriptionStructures) / sizeof(lpc54102EncoderDescriptionStructureType))
 
 #define CIAA_DRIVER_ENCODER_LPC54102_ENCODER_GRAY_POS_UNKNOWN    0x0f
 #define CIAA_DRIVER_ENCODER_LPC54102_ENCODER_GRAY_POS_00         0x00
@@ -79,7 +86,7 @@ typedef struct {
    uint32_t lpcIoconPin1;
    uint32_t lpcIoconPin2;
 
-} lpc54102EncoderDescriptionStructuresType;
+} lpc54102EncoderDescriptionStructureType;
 
 
 
@@ -107,7 +114,7 @@ const IRQn_Type lpc54102PinIntInterrupts[] = {
 };
 
 
-const lpc54102EncoderDescriptionStructuresType lpc54102EncoderDescriptionStructures[] = {
+const lpc54102EncoderDescriptionStructureType lpc54102EncoderDescriptionStructures[] = {
       {
             0,                            /* encoderIndex   */
             "enc/0",                      /* posixName      */
@@ -127,11 +134,11 @@ const lpc54102EncoderDescriptionStructuresType lpc54102EncoderDescriptionStructu
 };
 
 
-ciaaDevices_deviceType lpc54102EncoderPosixRegistrationDataTable[CIAA_DRIVER_ENCODER_LPC54102_ENCODER_PORTS];
+ciaaDevices_deviceType lpc54102EncoderPosixRegistrationDataTable[CIAA_DRIVER_ENCODER_LPC54102_GRAY_ENCODERS];
 
-uint32_t lpc54102EncoderPreviousEncoderStatus[CIAA_DRIVER_ENCODER_LPC54102_ENCODER_PORTS];
+uint32_t lpc54102EncoderPreviousEncoderStatus[CIAA_DRIVER_ENCODER_LPC54102_GRAY_ENCODERS];
 
-uint32_t lpc54102EncoderPreviousEncoderPosition[CIAA_DRIVER_ENCODER_LPC54102_ENCODER_PORTS];
+uint32_t lpc54102EncoderPreviousEncoderPosition[CIAA_DRIVER_ENCODER_LPC54102_GRAY_ENCODERS];
 
 
 
@@ -145,12 +152,11 @@ uint32_t lpc54102EncoderPreviousEncoderPosition[CIAA_DRIVER_ENCODER_LPC54102_ENC
 
 void ciaaDriverEncoderLpc54102_InitializeControlStructures()
 {
-   int32_t usartIndex;
    int32_t devIndex;
 
-   for (devIndex = 0; devIndex < CIAA_DRIVER_ENCODER_LPC54102_ENCODER_PORTS; devIndex++)
+   for (devIndex = 0; devIndex < CIAA_DRIVER_ENCODER_LPC54102_GRAY_ENCODERS; devIndex++)
    {
-      lpc54102EncoderPosixRegistrationDataTable[devIndex].path    = lpc54102EncoderConfigurationStructures[devIndex].posixName;
+      lpc54102EncoderPosixRegistrationDataTable[devIndex].path    = lpc54102EncoderDescriptionStructures[devIndex].posixName;
 
       lpc54102EncoderPosixRegistrationDataTable[devIndex].open    = ciaaDriverEncoder_open;
       lpc54102EncoderPosixRegistrationDataTable[devIndex].close   = ciaaDriverEncoder_close;
@@ -160,7 +166,7 @@ void ciaaDriverEncoderLpc54102_InitializeControlStructures()
       lpc54102EncoderPosixRegistrationDataTable[devIndex].lseek   = NULL;
 
       lpc54102EncoderPosixRegistrationDataTable[devIndex].upLayer = NULL;
-      lpc54102EncoderPosixRegistrationDataTable[devIndex].layer   = (void *)&lpc54102EncoderPosixRegistrationDataTable[devIndex];
+      lpc54102EncoderPosixRegistrationDataTable[devIndex].layer   = (void *)&lpc54102EncoderDescriptionStructures[devIndex];
       lpc54102EncoderPosixRegistrationDataTable[devIndex].loLayer = NULL;
    }
 }
@@ -168,22 +174,23 @@ void ciaaDriverEncoderLpc54102_InitializeControlStructures()
 
 void ciaaDriverEncoderLpc54102_hardwareInit()
 {
-   uint32_t pIntIntChannelsMask;
    uint32_t mode1, mode2;
+   int32_t pIntSelIndex1, pIntSelIndex2;
+   uint32_t pIntChannelMask;
    int32_t devIndex;
 
-   Chip_PININT_Init(LPC_PIN_INT);
+   Chip_PININT_Init(LPC_PININT);
 
-   pIntIntChannelsMask = 0;
+   pIntChannelMask = 0;
 
-   for (devIndex = 0; (devIndex < CIAA_DRIVER_ENCODER_LPC54102_ENCODER_PORTS) && (devIndex < 4); devIndex++)
+   for (devIndex = 0; (devIndex < CIAA_DRIVER_ENCODER_LPC54102_GRAY_ENCODERS) && (devIndex < 4); devIndex++)
    {
 
       pIntSelIndex1 = (2 * devIndex + 0);
       pIntSelIndex2 = (2 * devIndex + 1);
 
-      pIntIntChannelsMask = pInIntChannelsMask | PININTCH(pIntSelIndex1);
-      pIntIntChannelsMask = pInIntChannelsMask | PININTCH(pIntSelIndex2);
+      pIntChannelMask = pIntChannelMask | PININTCH(pIntSelIndex1);
+      pIntChannelMask = pIntChannelMask | PININTCH(pIntSelIndex2);
 
       /* *** */
 
@@ -252,16 +259,16 @@ void ciaaDriverEncoderLpc54102_hardwareInit()
    }
 
    Chip_PININT_SetPinModeEdge(
-         LPC_PIN_INT,
-         pIntIntChannelsMask);
+         LPC_PININT,
+         pIntChannelMask);
 
    Chip_PININT_EnableIntHigh(
-         LPC_PIN_INT,
-         pIntIntChannelsMask);
+         LPC_PININT,
+         pIntChannelMask);
 
    Chip_PININT_EnableIntLow(
-         LPC_PIN_INT,
-         pIntIntChannelsMask);
+         LPC_PININT,
+         pIntChannelMask);
 }
 
 
@@ -269,7 +276,7 @@ void ciaaDriverEncoderLpc54102_registerDevices()
 {
    int32_t devIndex;
 
-   for (devIndex = 0; (devIndex < CIAA_DRIVER_ENCODER_LPC54102_ENCODER_PORTS) && (devIndex < 4); devIndex++)
+   for (devIndex = 0; (devIndex < CIAA_DRIVER_ENCODER_LPC54102_GRAY_ENCODERS) && (devIndex < 4); devIndex++)
    {
       ciaaDioDevices_addDriver(&lpc54102EncoderPosixRegistrationDataTable[devIndex]);
    }
@@ -327,17 +334,18 @@ void ciaaDriverEncoderLpc54102_processEncoderInput(int32_t devIndex, uint32_t cu
 }
 
 
-void ciaaDriverEncoderLpc54102_irqHandler(uint32 pIntSelIndex)
+void ciaaDriverEncoderLpc54102_irqHandler(uint32_t pIntSelIndex)
 {
    int32_t devIndex;
    uint32_t pinIntStatus;
    uint32_t currentEncoderStatus;
+   int32_t pin0, pin1;
 
-   pinIntStatus = Chip_PININT_GetIntStatus(LPC_PIN_INT);
+   pinIntStatus = Chip_PININT_GetIntStatus(LPC_PININT);
 
-   Chip_PININT_ClearIntStatus(LPC_PIN_INT, pinIntStatus);
+   Chip_PININT_ClearIntStatus(LPC_PININT, pinIntStatus);
 
-   for (devIndex = 0; (devIndex < CIAA_DRIVER_ENCODER_LPC54102_ENCODER_PORTS) && (devIndex < 4); devIndex++)
+   for (devIndex = 0; (devIndex < CIAA_DRIVER_ENCODER_LPC54102_GRAY_ENCODERS) && (devIndex < 4); devIndex++)
    {
       pin0 = Chip_GPIO_GetPinState(LPC_GPIO, lpc54102EncoderDescriptionStructures[devIndex].lpcIoconPort1, lpc54102EncoderDescriptionStructures[devIndex].lpcIoconPin1) ? 1 : 0;
       pin1 = Chip_GPIO_GetPinState(LPC_GPIO, lpc54102EncoderDescriptionStructures[devIndex].lpcIoconPort2, lpc54102EncoderDescriptionStructures[devIndex].lpcIoconPin2) ? 1 : 0;
@@ -374,9 +382,9 @@ extern int32_t ciaaDriverEncoder_ioctl(ciaaDevices_deviceType const * const devi
 
 extern ssize_t ciaaDriverEncoder_read(ciaaDevices_deviceType const * const device, uint8_t* buffer, size_t const size)
 {
-   lpc54102EncoderDescriptionStructuresType *deviceDescription;
+   lpc54102EncoderDescriptionStructureType *deviceDescription;
 
-   deviceDescription = (ciaaDriverUartLpc54102DeviceDescriptionType *)device->layer;
+   deviceDescription = (lpc54102EncoderDescriptionStructureType *)device->layer;
 
    size_t retValue;
 
@@ -405,7 +413,7 @@ void ciaaDriverEncoder_init(void)
 
    ciaaDriverEncoderLpc54102_hardwareInit();
 
-   ciaaDriverEncoderLpc54102_registerDevices()
+   ciaaDriverEncoderLpc54102_registerDevices();
 }
 
 

@@ -31,8 +31,8 @@
  *
  */
 
-#ifndef _CIAADRIVERUART_H_
-#define _CIAADRIVERUART_H_
+#ifndef _CIAADRIVERPWM_H_
+#define _CIAADRIVERPWM_H_
 
 /** \brief CIAA Pwm driver header file
  **
@@ -83,7 +83,7 @@ extern "C" {
 
 
 
-/** \brief open the uart device
+/** \brief open the pwm device
  **
  ** \param[in] path path of the device to be opened
  ** \param[in] device device to be opened
@@ -98,7 +98,7 @@ extern ciaaDevices_deviceType * ciaaDriverPwm_open(char const * path,
       ciaaDevices_deviceType * device, uint8_t const oflag);
 
 
-/** \brief close the uart device
+/** \brief close the pwm device
  **
  **
  ** \param[in] device pointer to device
@@ -107,9 +107,9 @@ extern ciaaDevices_deviceType * ciaaDriverPwm_open(char const * path,
 extern int32_t ciaaDriverPwm_close(ciaaDevices_deviceType const * const device);
 
 
-/** \brief controls the uart device
+/** \brief controls the pwm device
  **
- ** Performs special control of a uart device
+ ** Performs special control of a pwm device
  **
  ** \param[in] device pointer to the device
  ** \param[in] request type of the request, depends on the device
@@ -120,9 +120,9 @@ extern int32_t ciaaDriverPwm_close(ciaaDevices_deviceType const * const device);
 extern int32_t ciaaDriverPwm_ioctl(ciaaDevices_deviceType const * const device, int32_t const request, void * param);
 
 
-/** \brief read from a uart device
+/** \brief read from a pwm device
  **
- ** Reads nbyte from the uart device device in buf.
+ ** Reads nbyte from the pwm device device in buf.
  **
  ** \param[in]  device  pointer to the device to be read
  ** \param[out] buf     buffer to store the read data
@@ -132,7 +132,7 @@ extern int32_t ciaaDriverPwm_ioctl(ciaaDevices_deviceType const * const device, 
 extern ssize_t ciaaDriverPwm_read(ciaaDevices_deviceType const * const device, uint8_t * const buffer, size_t const size);
 
 
-/** \brief writes to a uart device
+/** \brief writes to a pwm device
  **
  ** Writes nbyte to the device device from the buffer buf
  **
@@ -144,9 +144,9 @@ extern ssize_t ciaaDriverPwm_read(ciaaDevices_deviceType const * const device, u
 extern ssize_t ciaaDriverPwm_write(ciaaDevices_deviceType const * const device, uint8_t const * const buffer, size_t const size);
 
 
-/** \brief initialize the uart deriver
+/** \brief initialize the pwm deriver
  **
- ** Is called at system startup, the driver shall register all available uart
+ ** Is called at system startup, the driver shall register all available pwm
  ** devices.
  **/
 extern void ciaaDriverPwm_init(void);
@@ -166,5 +166,5 @@ extern void ciaaDriverPwm_init(void);
 /** @} doxygen end group definition */
 /** @} doxygen end group definition */
 /*==================[end of file]============================================*/
-#endif /* #ifndef _CIAADRIVERUART_H_ */
+#endif /* #ifndef _CIAADRIVERPWM_H_ */
 

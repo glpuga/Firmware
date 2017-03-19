@@ -83,7 +83,7 @@ extern "C" {
 uint32_t ciaaDriverCommonLpc54102_determineInputPinMode(uint32_t port, uint32_t pin);
 
 
-void ciaaDriverCommonLpc54102_determineOutputPinMode(uint32_t port, uint32_t pin);
+uint32_t ciaaDriverCommonLpc54102_determineOutputPinMode(uint32_t port, uint32_t pin);
 
 
 

@@ -83,7 +83,7 @@ extern "C" {
 
 
 
-/** \brief open the uart device
+/** \brief open the encoder device
  **
  ** \param[in] path path of the device to be opened
  ** \param[in] device device to be opened
@@ -98,7 +98,7 @@ extern ciaaDevices_deviceType * ciaaDriverEncoder_open(char const * path,
       ciaaDevices_deviceType * device, uint8_t const oflag);
 
 
-/** \brief close the uart device
+/** \brief close the encoder device
  **
  **
  ** \param[in] device pointer to device
@@ -107,9 +107,9 @@ extern ciaaDevices_deviceType * ciaaDriverEncoder_open(char const * path,
 extern int32_t ciaaDriverEncoder_close(ciaaDevices_deviceType const * const device);
 
 
-/** \brief controls the uart device
+/** \brief controls the encoder device
  **
- ** Performs special control of a uart device
+ ** Performs special control of a encoder device
  **
  ** \param[in] device pointer to the device
  ** \param[in] request type of the request, depends on the device
@@ -120,9 +120,9 @@ extern int32_t ciaaDriverEncoder_close(ciaaDevices_deviceType const * const devi
 extern int32_t ciaaDriverEncoder_ioctl(ciaaDevices_deviceType const * const device, int32_t const request, void * param);
 
 
-/** \brief read from a uart device
+/** \brief read from a encoder device
  **
- ** Reads nbyte from the uart device device in buf.
+ ** Reads nbyte from the encoder device device in buf.
  **
  ** \param[in]  device  pointer to the device to be read
  ** \param[out] buf     buffer to store the read data
@@ -132,7 +132,7 @@ extern int32_t ciaaDriverEncoder_ioctl(ciaaDevices_deviceType const * const devi
 extern ssize_t ciaaDriverEncoder_read(ciaaDevices_deviceType const * const device, uint8_t * const buffer, size_t const size);
 
 
-/** \brief writes to a uart device
+/** \brief writes to a encoder device
  **
  ** Writes nbyte to the device device from the buffer buf
  **
@@ -144,9 +144,9 @@ extern ssize_t ciaaDriverEncoder_read(ciaaDevices_deviceType const * const devic
 extern ssize_t ciaaDriverEncoder_write(ciaaDevices_deviceType const * const device, uint8_t const * const buffer, size_t const size);
 
 
-/** \brief initialize the uart deriver
+/** \brief initialize the encoder deriver
  **
- ** Is called at system startup, the driver shall register all available uart
+ ** Is called at system startup, the driver shall register all available encoder
  ** devices.
  **/
 extern void ciaaDriverEncoder_init(void);

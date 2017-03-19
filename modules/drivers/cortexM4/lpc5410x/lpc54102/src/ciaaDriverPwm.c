@@ -49,8 +49,15 @@
 
 
 
-#include "ciaaDriverConfig.h"
 #include "ciaaDriverPwm.h"
+#include "ciaaDriverConfig.h"
+#include "ciaaDriverCommon.h"
+#include "ciaaPOSIX_stdlib.h"
+#include "ciaaPOSIX_stdio.h"
+#include "os.h"
+
+#undef INLINE
+
 #include "chip.h"
 
 
@@ -135,7 +142,7 @@ const lpc54102PwmConfigurationStructuresType lpc54102PwmConfigurationStructures[
                   0,                                          /* sctOutputPinIndex       */
                   0,                                          /* lpcIoconPort            */
                   18,                                         /* lpcIoconPin             */
-                  (IOCON_DIGITAL_EN)                          /* lpcIoconMode            */
+                  (IOCON_DIGITAL_EN),                         /* lpcIoconMode            */
                   (IOCON_FUNC2),                              /* lpcIoconFunc            */
                   CIAA_DRIVER_PWM_LPC54102_CHANNEL_3_MODE     /* operatingMode           */
             }
@@ -156,7 +163,6 @@ ciaaDevices_deviceType lpc54102PwmPosixRegistrationDataTable[CIAA_DRIVER_PWM_LPC
 
 void ciaaDriverPwmLpc54102_InitializeControlStructures()
 {
-   int32_t usartIndex;
    int32_t devIndex;
 
    for (devIndex = 0; devIndex < CIAA_DRIVER_PWM_LPC54102_PWM_PORTS; devIndex++)
@@ -185,7 +191,7 @@ void ciaaDriverPwmLpc54102_hardwareInit()
 
    Chip_SCTPWM_SetRate(
          LPC_SCT0,
-         CIAA_DRIVER_USART_LPC54102_PWM_RATE);
+         CIAA_DRIVER_PWM_LPC54102_PWM_RATE);
 
    for (devIndex = 0; devIndex < CIAA_DRIVER_PWM_LPC54102_PWM_PORTS; devIndex++)
    {
@@ -194,7 +200,7 @@ void ciaaDriverPwmLpc54102_hardwareInit()
             devIndex,
             0);
 
-      Chip_SCTPWM_SetOutputPin(
+      Chip_SCTPWM_SetOutPin(
             LPC_SCT0,
             devIndex,
             lpc54102PwmConfigurationStructures[devIndex].sctOutputPinIndex);
@@ -272,19 +278,18 @@ extern ssize_t ciaaDriverPwm_write(ciaaDevices_deviceType const * const device, 
           * The input is a percentage (0 to 100) indicating the PWM signal PWM duty cycle.
           * */
 
-         if ((buffer[size - 1] >= 0) && (buffer[size - 1] <= 100))
+         if ((buffer[0] >= 0) && (buffer[0] <= 100))
          {
             ticks = Chip_SCTPWM_PercentageToTicks(
                   LPC_SCT0,
-                  dev->sctMatchRegisterIndex,
-                  buffer[size - 1]);
+                  buffer[0]);
 
             Chip_SCTPWM_SetDutyCycle(
                   LPC_SCT0,
                   dev->sctMatchRegisterIndex,
                   ticks);
 
-            ret = 0;
+            ret = 1;
 
          } else {
 
@@ -308,14 +313,14 @@ extern ssize_t ciaaDriverPwm_write(ciaaDevices_deviceType const * const device, 
           *
           * */
 
-         ticks = ((Chip_Clock_GetSystemClockRate() / 1000) * ((uint32_t)buffer[size - 1])) / 100;
+         ticks = ((Chip_Clock_GetSystemClockRate() / 1000) * ((uint32_t)buffer[0])) / 100;
 
          Chip_SCTPWM_SetDutyCycle(
                LPC_SCT0,
                dev->sctMatchRegisterIndex,
                ticks);
 
-         ret = 0;
+         ret = 1;
       }
    }
 
@@ -329,7 +334,7 @@ void ciaaDriverPwm_init(void)
 
    ciaaDriverPwmLpc54102_hardwareInit();
 
-   ciaaDriverPwmLpc54102_registerDevices()
+   ciaaDriverPwmLpc54102_registerDevices();
 }
 
 

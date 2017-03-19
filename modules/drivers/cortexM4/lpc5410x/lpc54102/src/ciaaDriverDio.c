@@ -49,11 +49,16 @@
 
 
 
-#include "ciaaDriverConfig.h"
 #include "ciaaDriverDio.h"
+#include "ciaaDriverConfig.h"
 #include "ciaaDriverCommon.h"
 #include "ciaaPOSIX_stdlib.h"
+#include "ciaaPOSIX_stdio.h"
 #include "ciaaPOSIX_string.h"
+#include "os.h"
+
+#undef INLINE
+
 #include "chip.h"
 
 
@@ -122,10 +127,10 @@ const ciaaDriverDioPinDescriptionType ciaaDriverDioLpc54102Outputs[] = {
       {  0,  27 },   /* OUT/0 [ 7] */
       {  0,  26 },   /* OUT/0 [ 8] */
       {  1,   8 },   /* OUT/0 [ 9] */
-      {  1,   7 }    /* OUT/0 [10] */
-      {  1,  17 }    /* OUT/0 [11] */
-      {  0,  28 }    /* OUT/0 [12] */
-      {  1,  14 }    /* OUT/0 [13] */
+      {  1,   7 },   /* OUT/0 [10] */
+      {  1,  17 },   /* OUT/0 [11] */
+      {  0,  28 },   /* OUT/0 [12] */
+      {  1,  14 },   /* OUT/0 [13] */
       {  0,  19 }    /* OUT/0 [14] */
 };
 
@@ -158,7 +163,7 @@ static ciaaDevices_deviceType ciaaDriverDioLpc54102OutputDevice = {
 };
 
 
-const static ciaaDevices_deviceType * const ciaaDriverDioLpc54102DevicesList[] =
+static ciaaDevices_deviceType * ciaaDriverDioLpc54102DevicesList[] =
       {
             &ciaaDriverDioLpc54102InputDevice,
             &ciaaDriverDioLpc54102OutputDevice,
@@ -177,7 +182,7 @@ const static ciaaDevices_deviceType * const ciaaDriverDioLpc54102DevicesList[] =
 
 static void ciaaDriverDioLpc54102_registerDevices()
 {
-   uint8_t devIndex;
+   int32_t devIndex;
 
    for(devIndex = 0; ciaaDriverDioLpc54102DevicesList[devIndex] != NULL; devIndex++)
    {
@@ -254,8 +259,8 @@ static void ciaaDriverDioLpc54102_writeOutput(uint32_t outputNumber, uint32_t va
    if (outputNumber < CIAA_DRIVER_DIO_LPC54102_OUTPUT_PIN_COUNT)
    {
       Chip_GPIO_SetPinState(LPC_GPIO,
-            ciaaDriverDio_Outputs[outputNumber].port,
-            ciaaDriverDio_Outputs[outputNumber].pin,
+            ciaaDriverDioLpc54102Outputs[outputNumber].port,
+            ciaaDriverDioLpc54102Outputs[outputNumber].pin,
             value != 0 ? 1 : 0);
    }
 }
@@ -268,8 +273,8 @@ static int32_t ciaaDriverDioLpc54102_readInput(uint32_t inputNumber)
    if (inputNumber < CIAA_DRIVER_DIO_LPC54102_INPUT_PIN_COUNT)
    {
       rv = Chip_GPIO_GetPinState(LPC_GPIO,
-            ciaaDriverDio_Inputs[inputNumber].port,
-            ciaaDriverDio_Inputs[inputNumber].pin) ? 1 : 0;
+            ciaaDriverDioLpc54102Inputs[inputNumber].port,
+            ciaaDriverDioLpc54102Inputs[inputNumber].pin) ? 1 : 0;
    }
 
    return rv;
@@ -283,8 +288,8 @@ static int32_t ciaaDriverDioLpc54102_readOutput(uint32_t outputNumber)
    if (outputNumber < CIAA_DRIVER_DIO_LPC54102_OUTPUT_PIN_COUNT)
    {
       rv = Chip_GPIO_GetPinState(LPC_GPIO,
-            ciaaDriverDio_Outputs[outputNumber].port,
-            ciaaDriverDio_Outputs[outputNumber].pin) ? 1 : 0;
+            ciaaDriverDioLpc54102Outputs[outputNumber].port,
+            ciaaDriverDioLpc54102Outputs[outputNumber].pin) ? 1 : 0;
    }
 
    return rv;
@@ -293,7 +298,7 @@ static int32_t ciaaDriverDioLpc54102_readOutput(uint32_t outputNumber)
 
 static int32_t ciaaDriverDioLpc54102_readPins(int32_t pinCount, uint8_t * buffer, size_t size, int32_t (*readFunction)(uint32_t))
 {
-   int32_t count
+   int32_t count;
    int32_t i, j;
 
    /*

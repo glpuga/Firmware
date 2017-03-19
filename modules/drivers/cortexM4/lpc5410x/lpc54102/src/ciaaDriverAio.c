@@ -49,11 +49,18 @@
 
 
 
-#include "ciaaDriverConfig.h"
 #include "ciaaDriverAio.h"
+#include "ciaaDriverConfig.h"
 #include "ciaaDriverCommon.h"
+#include "ciaaPOSIX_stdlib.h"
+#include "ciaaPOSIX_stdio.h"
+#include "os.h"
+
+#undef INLINE
+
 #include "chip.h"
 
+#include "ciaaDioDevices.h"
 
 
 /*==================[macros and definitions]=================================*/
@@ -161,7 +168,6 @@ void ciaaDriverAioLpc54102_SetAioInputPinInActiveMode(uint32_t port, uint32_t pi
 
 void ciaaDriverAioLpc54102_InitializeControlStructures()
 {
-   int32_t usartIndex;
    int32_t devIndex;
 
    for (devIndex = 0; devIndex < CIAA_DRIVER_AIO_LPC54102_ADC_PORTS; devIndex++)
@@ -266,6 +272,7 @@ extern ssize_t ciaaDriverAio_read(ciaaDevices_deviceType const * const device, u
 {
    lpc54102AioConfigurationStructuresType *dev;
    uint32_t dataRegister;
+   int32_t i;
 
    dev = (lpc54102AioConfigurationStructuresType *)device->layer;
 
@@ -324,7 +331,7 @@ void ciaaDriverAio_init(void)
 
    ciaaDriverAioLpc54102_hardwareInit();
 
-   ciaaDriverAioLpc54102_registerDevices()
+   ciaaDriverAioLpc54102_registerDevices();
 }
 
 

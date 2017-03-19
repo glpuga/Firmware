@@ -83,7 +83,7 @@ extern "C" {
 
 
 
-/** \brief open the uart device
+/** \brief open the pulse capture device
  **
  ** \param[in] path path of the device to be opened
  ** \param[in] device device to be opened
@@ -98,7 +98,7 @@ extern ciaaDevices_deviceType * ciaaDriverPulseCapture_open(char const * path,
       ciaaDevices_deviceType * device, uint8_t const oflag);
 
 
-/** \brief close the uart device
+/** \brief close the pulse capture device
  **
  **
  ** \param[in] device pointer to device
@@ -107,9 +107,9 @@ extern ciaaDevices_deviceType * ciaaDriverPulseCapture_open(char const * path,
 extern int32_t ciaaDriverPulseCapture_close(ciaaDevices_deviceType const * const device);
 
 
-/** \brief controls the uart device
+/** \brief controls the pulse capture device
  **
- ** Performs special control of a uart device
+ ** Performs special control of a pulse capture device
  **
  ** \param[in] device pointer to the device
  ** \param[in] request type of the request, depends on the device
@@ -120,9 +120,9 @@ extern int32_t ciaaDriverPulseCapture_close(ciaaDevices_deviceType const * const
 extern int32_t ciaaDriverPulseCapture_ioctl(ciaaDevices_deviceType const * const device, int32_t const request, void * param);
 
 
-/** \brief read from a uart device
+/** \brief read from a pulse capture device
  **
- ** Reads nbyte from the uart device device in buf.
+ ** Reads nbyte from the pulse capture device device in buf.
  **
  ** \param[in]  device  pointer to the device to be read
  ** \param[out] buf     buffer to store the read data
@@ -132,7 +132,7 @@ extern int32_t ciaaDriverPulseCapture_ioctl(ciaaDevices_deviceType const * const
 extern ssize_t ciaaDriverPulseCapture_read(ciaaDevices_deviceType const * const device, uint8_t * const buffer, size_t const size);
 
 
-/** \brief writes to a uart device
+/** \brief writes to a pulse capture device
  **
  ** Writes nbyte to the device device from the buffer buf
  **
@@ -144,9 +144,9 @@ extern ssize_t ciaaDriverPulseCapture_read(ciaaDevices_deviceType const * const 
 extern ssize_t ciaaDriverPulseCapture_write(ciaaDevices_deviceType const * const device, uint8_t const * const buffer, size_t const size);
 
 
-/** \brief initialize the uart deriver
+/** \brief initialize the pulse capture deriver
  **
- ** Is called at system startup, the driver shall register all available uart
+ ** Is called at system startup, the driver shall register all available pulse capture
  ** devices.
  **/
 extern void ciaaDriverPulseCapture_init(void);
