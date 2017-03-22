@@ -71,6 +71,11 @@ extern "C" {
 #define CIAA_DRIVER_COMMON_LPC54102_INTERNAL_BUFFER_SIZE 16
 
 
+#define ciaaDriverCriticalSectionEntry()     SuspendAllInterrupts()
+
+#define ciaaDriverCriticalSectionExit()      ResumeAllInterrupts()
+
+
 
 /*==================[typedef]================================================*/
 

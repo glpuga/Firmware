@@ -51,6 +51,12 @@
 
 #include "ciaaDriverConfig.h"
 #include "ciaaDriverCommon.h"
+#include "ciaaPOSIX_stdlib.h"
+#include "ciaaPOSIX_stdio.h"
+#include "os.h"
+
+#undef INLINE
+
 #include "chip.h"
 
 
@@ -234,25 +240,44 @@ uint32_t ciaaDriverCommonLpc54102_internalFifoNextIndex(uint32_t index)
 
 void ciaaDriverCommonLpc54102_internalFifoClear(ciaaDriverCommonLpc54102InternalBufferType *fifo)
 {
+   ciaaDriverCriticalSectionEntry();
+
    fifo->head = 0;
 
    fifo->tail = 0;
+
+   ciaaDriverCriticalSectionExit();
 }
 
 
 int32_t ciaaDriverCommonLpc54102_internalFifoIsEmpty(ciaaDriverCommonLpc54102InternalBufferType *fifo)
 {
-   return (fifo->head == fifo->tail) ? 1 : 0;
+   int32_t returnValue;
+
+   ciaaDriverCriticalSectionEntry();
+
+   returnValue = (fifo->head == fifo->tail) ? 1 : 0;
+
+   ciaaDriverCriticalSectionExit();
+
+   return returnValue;
 }
 
 
 uint32_t ciaaDriverCommonLpc54102_internalFifoIsFull(ciaaDriverCommonLpc54102InternalBufferType *fifo)
 {
    uint32_t nextTail;
+   int32_t returnValue;
+
+   ciaaDriverCriticalSectionEntry();
 
    nextTail = ciaaDriverCommonLpc54102_internalFifoNextIndex(fifo->tail);
 
-   return (fifo->head == nextTail) ? 1 : 0;
+   returnValue = (fifo->head == nextTail) ? 1 : 0;
+
+   ciaaDriverCriticalSectionExit();
+
+   return returnValue;
 }
 
 
@@ -262,25 +287,36 @@ void ciaaDriverCommonLpc54102_internalFifoPush(ciaaDriverCommonLpc54102InternalB
     * You must check whether the FIFO is full before calling this function.
     * */
 
+   ciaaDriverCriticalSectionEntry();
+
    fifo->circularQueue[fifo->tail] = item;
 
    fifo->tail = ciaaDriverCommonLpc54102_internalFifoNextIndex(fifo->tail);
+
+   ciaaDriverCriticalSectionExit();
 }
 
 
 int32_t ciaaDriverCommonLpc54102_internalFifoPop(ciaaDriverCommonLpc54102InternalBufferType *fifo)
 {
    uint32_t oldHead;
+   uint32_t oldHeadValue;
 
    /*
     * You must check whether the FIFO is empty before calling this function.
     * */
 
+   ciaaDriverCriticalSectionEntry();
+
    oldHead = fifo->head;
 
    fifo->head = ciaaDriverCommonLpc54102_internalFifoNextIndex(fifo->head);
 
-   return fifo->circularQueue[oldHead];
+   oldHeadValue = fifo->circularQueue[oldHead];
+
+   ciaaDriverCriticalSectionExit();
+
+   return oldHeadValue;
 }
 
 
