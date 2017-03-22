@@ -72,8 +72,6 @@
 
 #define CIAA_DRIVER_PULSE_CAPTURE_LPC54102_PREESCALER_INPUT_FREQ (1e6)
 
-#define CIAA_DRIVER_PULSE_CAPTURE_LPC54102_INTERNAL_BUFFER_SIZE  (8)
-
 #define CIAA_DRIVER_PULSE_CAPTURE_LPC54102_CAPTURE_PORTS         (sizeof(ciaaDriverPulseCaptureLpc54102PulseCaptureDeviceDescriptionTable) / sizeof(ciaaDriverPulseCaptureLpc54102DeviceDescriptionType))
 
 
@@ -91,17 +89,6 @@ typedef struct {
    IRQn_Type lpcNvicInterrupt;
 
 } ciaaDriverPulseCaptureLpc54102DeviceDescriptionType;
-
-
-typedef struct {
-
-   uint32_t circularQueue[CIAA_DRIVER_PULSE_CAPTURE_LPC54102_INTERNAL_BUFFER_SIZE];
-
-   uint32_t head;
-
-   uint32_t tail;
-
-} ciaaDriverPulseCaptureLpc54102InternalBufferType;
 
 
 
@@ -143,7 +130,7 @@ const ciaaDriverPulseCaptureLpc54102DeviceDescriptionType ciaaDriverPulseCapture
 
 ciaaDevices_deviceType ciaaDriverPulseCaptureLpc54102PosixRegistrationTable[CIAA_DRIVER_PULSE_CAPTURE_LPC54102_CAPTURE_PORTS];
 
-ciaaDriverPulseCaptureLpc54102InternalBufferType ciaaDriverPulseCaptureLpc54102RxBufferTable[CIAA_DRIVER_PULSE_CAPTURE_LPC54102_CAPTURE_PORTS];
+ciaaDriverCommonLpc54102InternalBufferType ciaaDriverPulseCaptureLpc54102RxBufferTable[CIAA_DRIVER_PULSE_CAPTURE_LPC54102_CAPTURE_PORTS];
 
 int32_t ciaaDriverPulseCaptureLpc54102Timer2DevLookup[CIAA_DRIVER_PULSE_CAPTURE_LPC54102_CAPTURE_PORTS];
 
@@ -207,73 +194,6 @@ inline void ciaaDriverPulseCapture_disableInterrupt(int32_t timerIndex)
 }
 
 
-inline uint32_t ciaaDriverPulseCaptureLpc54102_internalFifoNextIndex(uint32_t index)
-{
-   int32_t incrementedIndex;
-
-   incrementedIndex = index + 1;
-
-   if (incrementedIndex >= CIAA_DRIVER_PULSE_CAPTURE_LPC54102_INTERNAL_BUFFER_SIZE)
-   {
-      incrementedIndex = incrementedIndex - CIAA_DRIVER_PULSE_CAPTURE_LPC54102_INTERNAL_BUFFER_SIZE;
-   }
-
-   return incrementedIndex;
-}
-
-
-inline void ciaaDriverPulseCaptureLpc54102_internalFifoClear(ciaaDriverPulseCaptureLpc54102InternalBufferType *fifo)
-{
-   fifo->head = 0;
-
-   fifo->tail = 0;
-}
-
-
-inline int32_t ciaaDriverPulseCaptureLpc54102_internalFifoIsEmpty(ciaaDriverPulseCaptureLpc54102InternalBufferType *fifo)
-{
-   return (fifo->head == fifo->tail) ? 1 : 0;
-}
-
-
-inline int32_t ciaaDriverPulseCaptureLpc54102_internalFifoIsFull(ciaaDriverPulseCaptureLpc54102InternalBufferType *fifo)
-{
-   uint32_t nextTail;
-
-   nextTail = ciaaDriverPulseCaptureLpc54102_internalFifoNextIndex(fifo->tail);
-
-   return (fifo->head == nextTail) ? 1 : 0;
-}
-
-
-void ciaaDriverPulseCaptureLpc54102_internalFifoPush(ciaaDriverPulseCaptureLpc54102InternalBufferType *fifo, uint32_t item)
-{
-   /*
-    * You must check whether the FIFO is full before calling this function.
-    * */
-
-   fifo->circularQueue[fifo->tail] = item;
-
-   fifo->tail = ciaaDriverPulseCaptureLpc54102_internalFifoNextIndex(fifo->tail);
-}
-
-
-int32_t ciaaDriverPulseCaptureLpc54102_internalFifoPop(ciaaDriverPulseCaptureLpc54102InternalBufferType *fifo)
-{
-   uint32_t oldHead;
-
-   /*
-    * You must check whether the FIFO is empty before calling this function.
-    * */
-
-   oldHead = fifo->head;
-
-   fifo->head = ciaaDriverPulseCaptureLpc54102_internalFifoNextIndex(fifo->head);
-
-   return fifo->circularQueue[oldHead];
-}
-
-
 void ciaaDriverPulseCaptureLpc54102_InitializeControlStructures()
 {
    int32_t devIndex;
@@ -315,7 +235,7 @@ void ciaaDriverPulseCaptureLpc54102_InitializeControlStructures()
        * Initialize the rx buffer
        * */
 
-      ciaaDriverPulseCaptureLpc54102_internalFifoClear(&ciaaDriverPulseCaptureLpc54102RxBufferTable[devIndex]);
+      ciaaDriverCommonLpc54102_internalFifoClear(&ciaaDriverPulseCaptureLpc54102RxBufferTable[devIndex]);
    }
 }
 
@@ -399,7 +319,7 @@ static void ciaaDriverPulseCaptureLpc54102_rxIndication(ciaaDevices_deviceType c
 
 void ciaaDriverPulseCaptureLpc54102_unifiedIRQn(int32_t timerIndex)
 {
-   ciaaDriverPulseCaptureLpc54102InternalBufferType *rxBufferPtr;
+   ciaaDriverCommonLpc54102InternalBufferType *rxBufferPtr;
    uint8_t *capturedValuePtr;
    uint32_t capturedValue;
    int32_t devIndex;
@@ -421,7 +341,7 @@ void ciaaDriverPulseCaptureLpc54102_unifiedIRQn(int32_t timerIndex)
 
    for (byteIndex = 0; byteIndex < 4; byteIndex++)
    {
-      ciaaDriverPulseCaptureLpc54102_internalFifoPush(
+      ciaaDriverCommonLpc54102_internalFifoPush(
             rxBufferPtr,
             capturedValuePtr[byteIndex]);
    }
@@ -486,7 +406,7 @@ extern int32_t ciaaDriverPulseCapture_ioctl(ciaaDevices_deviceType const * const
 
 extern ssize_t ciaaDriverPulseCapture_read(ciaaDevices_deviceType const * const device, uint8_t* buffer, size_t const size)
 {
-   ciaaDriverPulseCaptureLpc54102InternalBufferType *rxBufferPtr;
+   ciaaDriverCommonLpc54102InternalBufferType *rxBufferPtr;
    int32_t timerIndex;
    int32_t devIndex;
    ssize_t ret = -1;
@@ -499,9 +419,9 @@ extern ssize_t ciaaDriverPulseCapture_read(ciaaDevices_deviceType const * const 
 
    for (ret = 0; ret < size; ret++)
    {
-      if (ciaaDriverPulseCaptureLpc54102_internalFifoIsEmpty(rxBufferPtr) == 0)
+      if (ciaaDriverCommonLpc54102_internalFifoIsEmpty(rxBufferPtr) == 0)
       {
-         buffer[ret] = ciaaDriverPulseCaptureLpc54102_internalFifoPop(rxBufferPtr);
+         buffer[ret] = ciaaDriverCommonLpc54102_internalFifoPop(rxBufferPtr);
 
       } else {
 

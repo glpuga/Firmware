@@ -74,18 +74,6 @@
 
 #define CIAA_DRIVER_USART_LPC54102_RX_INTERRUPT_MASK        (LPC_PERIPFIFO_INT_RXTH | LPC_PERIPFIFO_INT_RXTIMEOUT)
 
-#define CIAA_DRIVER_USART_LPC54102_INTERNAL_BUFFER_SIZE     (16)
-
-
-typedef struct {
-
-   uint32_t circularQueue[CIAA_DRIVER_USART_LPC54102_INTERNAL_BUFFER_SIZE];
-
-   uint32_t head;
-
-   uint32_t tail;
-
-} ciaaDriverUartLpc54102InternalBuffer;
 
 
 typedef struct {
@@ -179,8 +167,8 @@ const ciaaDriverUartLpc54102DeviceDescriptionType ciaaDriverUartLpc54102DeviceDe
       };
 
 
-ciaaDriverUartLpc54102InternalBuffer ciaaDriverUartLpc54102InternalTxBuffers[CIAA_DRIVER_USART_LPC54102_DEVICE_TABLE_SIZE];
-ciaaDriverUartLpc54102InternalBuffer ciaaDriverUartLpc54102InternalRxBuffers[CIAA_DRIVER_USART_LPC54102_DEVICE_TABLE_SIZE];
+ciaaDriverCommonLpc54102InternalBufferType ciaaDriverUartLpc54102InternalTxBuffers[CIAA_DRIVER_USART_LPC54102_DEVICE_TABLE_SIZE];
+ciaaDriverCommonLpc54102InternalBufferType ciaaDriverUartLpc54102InternalRxBuffers[CIAA_DRIVER_USART_LPC54102_DEVICE_TABLE_SIZE];
 
 ciaaDevices_deviceType ciaaDriverUartLpc54102PosixRegistrationDataTable[CIAA_DRIVER_USART_LPC54102_DEVICE_TABLE_SIZE];
 
@@ -271,73 +259,6 @@ inline uint32_t ciaaDriverUartLpc54102_EnabledInts(LPC_FIFO_T *pFIFO, int usartI
 }
 
 
-inline uint32_t ciaaDriverUartLpc54102_internalFifoNextIndex(uint32_t index)
-{
-   int32_t incrementedIndex;
-
-   incrementedIndex = index + 1;
-
-   if (incrementedIndex >= CIAA_DRIVER_USART_LPC54102_INTERNAL_BUFFER_SIZE)
-   {
-      incrementedIndex = incrementedIndex - CIAA_DRIVER_USART_LPC54102_INTERNAL_BUFFER_SIZE;
-   }
-
-   return incrementedIndex;
-}
-
-
-inline void ciaaDriverUartLpc54102_internalFifoClear(ciaaDriverUartLpc54102InternalBuffer *fifo)
-{
-   fifo->head = 0;
-
-   fifo->tail = 0;
-}
-
-
-inline int32_t ciaaDriverUartLpc54102_internalFifoIsEmpty(ciaaDriverUartLpc54102InternalBuffer *fifo)
-{
-   return (fifo->head == fifo->tail) ? 1 : 0;
-}
-
-
-inline uint32_t ciaaDriverUartLpc54102_internalFifoIsFull(ciaaDriverUartLpc54102InternalBuffer *fifo)
-{
-   uint32_t nextTail;
-
-   nextTail = ciaaDriverUartLpc54102_internalFifoNextIndex(fifo->tail);
-
-   return (fifo->head == nextTail) ? 1 : 0;
-}
-
-
-void ciaaDriverUartLpc54102_internalFifoPush(ciaaDriverUartLpc54102InternalBuffer *fifo, uint32_t item)
-{
-   /*
-    * You must check whether the FIFO is full before calling this function.
-    * */
-
-   fifo->circularQueue[fifo->tail] = item;
-
-   fifo->tail = ciaaDriverUartLpc54102_internalFifoNextIndex(fifo->tail);
-}
-
-
-int32_t ciaaDriverUartLpc54102_internalFifoPop(ciaaDriverUartLpc54102InternalBuffer *fifo)
-{
-   uint32_t oldHead;
-
-   /*
-    * You must check whether the FIFO is empty before calling this function.
-    * */
-
-   oldHead = fifo->head;
-
-   fifo->head = ciaaDriverUartLpc54102_internalFifoNextIndex(fifo->head);
-
-   return fifo->circularQueue[oldHead];
-}
-
-
 void ciaaDriverUartLpc54102_InitializeControlStructures()
 {
    LPC_USART_T *lpcDeviceId;
@@ -365,8 +286,8 @@ void ciaaDriverUartLpc54102_InitializeControlStructures()
        * Internal RX buffer
        * */
 
-      ciaaDriverUartLpc54102_internalFifoClear(&ciaaDriverUartLpc54102InternalTxBuffers[devIndex]);
-      ciaaDriverUartLpc54102_internalFifoClear(&ciaaDriverUartLpc54102InternalRxBuffers[devIndex]);
+      ciaaDriverCommonLpc54102_internalFifoClear(&ciaaDriverUartLpc54102InternalTxBuffers[devIndex]);
+      ciaaDriverCommonLpc54102_internalFifoClear(&ciaaDriverUartLpc54102InternalRxBuffers[devIndex]);
 
       /*
        * POSIX device information information
@@ -568,8 +489,8 @@ static void ciaaDriverUartLpc54102_txConfirmation(ciaaDevices_deviceType const *
 
 void ciaaDriverUartLpc54102_unifiedIRQn(int32_t usartIndex)
 {
-   ciaaDriverUartLpc54102InternalBuffer *rxBufferPtr;
-   ciaaDriverUartLpc54102InternalBuffer *txBufferPtr;
+   ciaaDriverCommonLpc54102InternalBufferType *rxBufferPtr;
+   ciaaDriverCommonLpc54102InternalBufferType *txBufferPtr;
    uint32_t uartStatus;
    int32_t devIndex;
    int32_t usartTxBufferIsFull;
@@ -590,11 +511,11 @@ void ciaaDriverUartLpc54102_unifiedIRQn(int32_t usartIndex)
 
          Chip_FIFOUSART_ReadRX(LPC_FIFO, usartIndex, true, (void*)&dataByte, 1);
 
-         ciaaDriverUartLpc54102_internalFifoPush(rxBufferPtr, dataByte);
+         ciaaDriverCommonLpc54102_internalFifoPush(rxBufferPtr, dataByte);
 
          uartStatus = Chip_FIFOUSART_GetStatus(LPC_FIFO, usartIndex);
 
-      } while ((ciaaDriverUartLpc54102_internalFifoIsFull(rxBufferPtr) == 0) && ((uartStatus & LPC_PERIPFIFO_STAT_RXEMPTY) == 0));
+      } while ((ciaaDriverCommonLpc54102_internalFifoIsFull(rxBufferPtr) == 0) && ((uartStatus & LPC_PERIPFIFO_STAT_RXEMPTY) == 0));
 
       ciaaDriverUartLpc54102_rxIndication(&ciaaDriverUartLpc54102PosixRegistrationDataTable[devIndex]);
    }
@@ -608,7 +529,7 @@ void ciaaDriverUartLpc54102_unifiedIRQn(int32_t usartIndex)
 
       ciaaDriverUartLpc54102_txConfirmation(&ciaaDriverUartLpc54102PosixRegistrationDataTable[devIndex]);
 
-      while (ciaaDriverUartLpc54102_internalFifoIsEmpty(txBufferPtr) == 0)
+      while (ciaaDriverCommonLpc54102_internalFifoIsEmpty(txBufferPtr) == 0)
       {
 
          if (Chip_FIFOUSART_GetTxCount(LPC_FIFO, usartIndex) > 0)
@@ -618,7 +539,7 @@ void ciaaDriverUartLpc54102_unifiedIRQn(int32_t usartIndex)
              * buffer.
              * */
 
-            dataByte = ciaaDriverUartLpc54102_internalFifoPop(txBufferPtr);
+            dataByte = ciaaDriverCommonLpc54102_internalFifoPop(txBufferPtr);
 
             Chip_FIFOUSART_WriteTX(LPC_FIFO, usartIndex, true, (void*)&dataByte, 1);
 
@@ -638,7 +559,7 @@ void ciaaDriverUartLpc54102_unifiedIRQn(int32_t usartIndex)
           * FIFO.
           * */
 
-         if (ciaaDriverUartLpc54102_internalFifoIsEmpty(txBufferPtr) != 0)
+         if (ciaaDriverCommonLpc54102_internalFifoIsEmpty(txBufferPtr) != 0)
          {
             ciaaDriverUartLpc54102_txConfirmation(&ciaaDriverUartLpc54102PosixRegistrationDataTable[devIndex]);
          }
@@ -758,7 +679,7 @@ extern int32_t ciaaDriverUart_ioctl(ciaaDevices_deviceType const * const device,
 extern ssize_t ciaaDriverUart_read(ciaaDevices_deviceType const * const device, uint8_t* buffer, size_t const size)
 {
    ciaaDriverUartLpc54102DeviceDescriptionType *dev;
-   ciaaDriverUartLpc54102InternalBuffer *rxBufferPtr;
+   ciaaDriverCommonLpc54102InternalBufferType *rxBufferPtr;
    int32_t devIndex;
    ssize_t ret = -1;
 
@@ -770,9 +691,9 @@ extern ssize_t ciaaDriverUart_read(ciaaDevices_deviceType const * const device, 
 
    for (ret = 0; ret < size; ret++)
    {
-      if (ciaaDriverUartLpc54102_internalFifoIsEmpty(rxBufferPtr) == 0)
+      if (ciaaDriverCommonLpc54102_internalFifoIsEmpty(rxBufferPtr) == 0)
       {
-         buffer[ret] = ciaaDriverUartLpc54102_internalFifoPop(rxBufferPtr);
+         buffer[ret] = ciaaDriverCommonLpc54102_internalFifoPop(rxBufferPtr);
 
       } else {
 
@@ -787,7 +708,7 @@ extern ssize_t ciaaDriverUart_read(ciaaDevices_deviceType const * const device, 
 extern ssize_t ciaaDriverUart_write(ciaaDevices_deviceType const * const device, uint8_t const * const buffer, size_t const size)
 {
    ciaaDriverUartLpc54102DeviceDescriptionType *dev;
-   ciaaDriverUartLpc54102InternalBuffer *txBufferPtr;
+   ciaaDriverCommonLpc54102InternalBufferType *txBufferPtr;
    int32_t devIndex;
    ssize_t ret = -1;
 
@@ -799,9 +720,9 @@ extern ssize_t ciaaDriverUart_write(ciaaDevices_deviceType const * const device,
 
    for (ret = 0; ret < size; ret++)
    {
-      if (ciaaDriverUartLpc54102_internalFifoIsFull(txBufferPtr) == 0)
+      if (ciaaDriverCommonLpc54102_internalFifoIsFull(txBufferPtr) == 0)
       {
-         ciaaDriverUartLpc54102_internalFifoPush(txBufferPtr, buffer[ret]);
+         ciaaDriverCommonLpc54102_internalFifoPush(txBufferPtr, buffer[ret]);
 
       } else {
 

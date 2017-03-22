@@ -217,6 +217,76 @@ uint32_t ciaaDriverCommonLpc54102_determineOutputPinMode(uint32_t port, uint32_t
 
 
 
+uint32_t ciaaDriverCommonLpc54102_internalFifoNextIndex(uint32_t index)
+{
+   int32_t incrementedIndex;
+
+   incrementedIndex = index + 1;
+
+   if (incrementedIndex >= CIAA_DRIVER_COMMON_LPC54102_INTERNAL_BUFFER_SIZE)
+   {
+      incrementedIndex = incrementedIndex - CIAA_DRIVER_COMMON_LPC54102_INTERNAL_BUFFER_SIZE;
+   }
+
+   return incrementedIndex;
+}
+
+
+void ciaaDriverCommonLpc54102_internalFifoClear(ciaaDriverCommonLpc54102InternalBufferType *fifo)
+{
+   fifo->head = 0;
+
+   fifo->tail = 0;
+}
+
+
+int32_t ciaaDriverCommonLpc54102_internalFifoIsEmpty(ciaaDriverCommonLpc54102InternalBufferType *fifo)
+{
+   return (fifo->head == fifo->tail) ? 1 : 0;
+}
+
+
+uint32_t ciaaDriverCommonLpc54102_internalFifoIsFull(ciaaDriverCommonLpc54102InternalBufferType *fifo)
+{
+   uint32_t nextTail;
+
+   nextTail = ciaaDriverCommonLpc54102_internalFifoNextIndex(fifo->tail);
+
+   return (fifo->head == nextTail) ? 1 : 0;
+}
+
+
+void ciaaDriverCommonLpc54102_internalFifoPush(ciaaDriverCommonLpc54102InternalBufferType *fifo, uint32_t item)
+{
+   /*
+    * You must check whether the FIFO is full before calling this function.
+    * */
+
+   fifo->circularQueue[fifo->tail] = item;
+
+   fifo->tail = ciaaDriverCommonLpc54102_internalFifoNextIndex(fifo->tail);
+}
+
+
+int32_t ciaaDriverCommonLpc54102_internalFifoPop(ciaaDriverCommonLpc54102InternalBufferType *fifo)
+{
+   uint32_t oldHead;
+
+   /*
+    * You must check whether the FIFO is empty before calling this function.
+    * */
+
+   oldHead = fifo->head;
+
+   fifo->head = ciaaDriverCommonLpc54102_internalFifoNextIndex(fifo->head);
+
+   return fifo->circularQueue[oldHead];
+}
+
+
+
+
+
 /*==================[interrupt handlers]=====================================*/
 
 
