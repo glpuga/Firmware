@@ -68,6 +68,44 @@ extern "C" {
 
 
 
+/*
+ * UART DRIVER
+ * */
+
+#define CIAA_DRIVER_USART_LPC54102_DEFAULT_BAUDRATE         (9600)
+
+#define CIAA_DRIVER_USART_LPC54102_DEFAULT_CONFIG           (UART_CFG_DATALEN_8 | UART_CFG_STOPLEN_1 | UART_CFG_PARITY_NONE)
+
+
+
+/*
+ * PWM DRIVER
+ * */
+
+#define CIAA_DRIVER_PWM_LPC54102_PWM_RATE                   (1000)
+
+#define CIAA_DRIVER_PWM_LPC54102_SERVO_RATE                 (50)
+
+#define CIAA_DRIVER_PWM_LPC54102_CHANNEL_0_NAME             "pwm/0"
+#define CIAA_DRIVER_PWM_LPC54102_CHANNEL_1_NAME             "pwm/1"
+#define CIAA_DRIVER_PWM_LPC54102_CHANNEL_2_NAME             "srv/0"
+#define CIAA_DRIVER_PWM_LPC54102_CHANNEL_3_NAME             "srv/1"
+
+#define CIAA_DRIVER_PWM_LPC54102_CHANNEL_0_MODE             (CIAA_DRIVER_PWM_LPC54102_MODE_PWM)
+#define CIAA_DRIVER_PWM_LPC54102_CHANNEL_1_MODE             (CIAA_DRIVER_PWM_LPC54102_MODE_PWM)
+#define CIAA_DRIVER_PWM_LPC54102_CHANNEL_2_MODE             (CIAA_DRIVER_PWM_LPC54102_MODE_SERVO)
+#define CIAA_DRIVER_PWM_LPC54102_CHANNEL_3_MODE             (CIAA_DRIVER_PWM_LPC54102_MODE_SERVO)
+
+
+
+/*
+ * PWM DRIVER
+ * */
+
+#define CIAA_DRIVER_AIO_LPC54102_ADC_CLOCK_RATE             (10000000)
+
+
+
 /*==================[typedef]================================================*/
 
 
