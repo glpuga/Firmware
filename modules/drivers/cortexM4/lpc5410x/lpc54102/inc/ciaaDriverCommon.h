@@ -68,28 +68,7 @@ extern "C" {
 
 
 
-#define CIAA_DRIVER_COMMON_LPC54102_INTERNAL_BUFFER_SIZE 16
-
-
-#define ciaaDriverCriticalSectionEntry()     SuspendAllInterrupts()
-
-#define ciaaDriverCriticalSectionExit()      ResumeAllInterrupts()
-
-
-
 /*==================[typedef]================================================*/
-
-
-
-typedef struct {
-
-   uint32_t circularQueue[CIAA_DRIVER_COMMON_LPC54102_INTERNAL_BUFFER_SIZE];
-
-   uint32_t head;
-
-   uint32_t tail;
-
-} ciaaDriverCommonLpc54102InternalBufferType;
 
 
 
@@ -98,25 +77,6 @@ typedef struct {
 
 
 /*==================[external functions declaration]=========================*/
-
-
-
-uint32_t ciaaDriverCommonLpc54102_determineInputPinMode(uint32_t port, uint32_t pin);
-
-uint32_t ciaaDriverCommonLpc54102_determineOutputPinMode(uint32_t port, uint32_t pin);
-
-
-uint32_t ciaaDriverCommonLpc54102_internalFifoNextIndex(uint32_t index);
-
-void ciaaDriverCommonLpc54102_internalFifoClear(ciaaDriverCommonLpc54102InternalBufferType *fifo);
-
-int32_t ciaaDriverCommonLpc54102_internalFifoIsEmpty(ciaaDriverCommonLpc54102InternalBufferType *fifo);
-
-uint32_t ciaaDriverCommonLpc54102_internalFifoIsFull(ciaaDriverCommonLpc54102InternalBufferType *fifo);
-
-void ciaaDriverCommonLpc54102_internalFifoPush(ciaaDriverCommonLpc54102InternalBufferType *fifo, uint32_t item);
-
-int32_t ciaaDriverCommonLpc54102_internalFifoPop(ciaaDriverCommonLpc54102InternalBufferType *fifo);
 
 
 
