@@ -98,16 +98,6 @@ void ciaak_start(void)
 #endif
    ciaaDriverDio_init();
    ciaaDriverAio_init();
-
-#if (BOARD == pico_ciaa)
-
-   ciaaDriverPwm_init();
-
-   ciaaDriverPulseCapture_init();
-
-   ciaaDriverEncoder_init();
-
-#endif
 }
 
 void *ciaak_malloc(size_t size)

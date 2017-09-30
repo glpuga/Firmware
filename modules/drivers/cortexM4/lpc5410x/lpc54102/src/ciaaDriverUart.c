@@ -50,8 +50,6 @@
 
 
 #include "ciaaDriverUart.h"
-#include "ciaaDriverConfig.h"
-#include "ciaaDriverCommon.h"
 
 
 
