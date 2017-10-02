@@ -55,12 +55,6 @@
 #include "ciaaDriverEth.h"
 #endif
 
-#if (BOARD == pico_ciaa)
-#include "ciaaDriverPwm.h"
-#include "ciaaDriverEncoder.h"
-#include "ciaaDriverPulse.h"
-#endif
-
 #include "ciaaPOSIX_stdlib.h"
 
 /*==================[macros and definitions]=================================*/
